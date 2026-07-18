@@ -49,13 +49,20 @@ const PRODUCTS = {
     { collection: "Pulso Clasics", name: "Figaro Torzal", specs: "20cm / 6mm", material: "Oro Laminado", price: 665, img: "assets/pulso-figaro-torzal.jpg", status: "nuevo" },
     { collection: "Pulso Clasics", name: "Barbada Diamantada", specs: "20cm / 5mm", material: "Plata 925", price: 1160, img: "assets/pulso-barbada-diamantada.jpg", status: "nuevo" },
     { collection: "Pulso Tenis", name: "Diamantado", specs: "20cm / 5mm", material: "Plata 925", price: 1490, img: "assets/pulso-tenis-diamantado.jpg", status: "agotado" },
+    
     { collection: "Van Cleef", name: "Vintage Alhambra", specs: "20cm", material: "Plata 925", price: 1260,
-    img: "assets/vancleef-alhambra-diamante.jpg",
+    img: "assets/vancleef-blanca-1.png",
     images: [
-    "assets/vancleef-alhambra-diamante.jpg",
-    "assets/vancleef-blanca.avif"
+      "assets/vancleef-blanca-1.png",
+      "assets/vancleef-blanca-2.avif",
+      "assets/vancleef-blanca-3.avif"
     ],
-    status: "agotado" },
+    status: "nuevo" },
+
+
+
+
+
     { collection: "Van Cleef", name: "Vintage Alhambra Onix", specs: "20cm", material: "Plata 925", price: 1260, img: "assets/vancleef-alhambra-negro.jpg", status: "agotado" }
   ],
 

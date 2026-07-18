@@ -2,7 +2,7 @@
 // FERA — Render de catálogo + integración WhatsApp
 // ============================================
 
-const INSTAGRAM_URL = "https://www.instagram.com/carlos_fera_/"; // <- pega aquí tu link de Instagram, ej: "https://instagram.com/fera.joyeria"
+const INSTAGRAM_URL = ""; // <- pega aquí tu link de Instagram, ej: "https://instagram.com/fera.joyeria"
 
 function money(n) {
   return "$" + n.toLocaleString("es-MX");
@@ -15,11 +15,12 @@ function whatsappLink(product) {
 
 const WHATSAPP_ICON = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8.9-.2.2-.3.2-.5.1-1.4-.7-2.4-1.3-3.3-2.9-.3-.4.2-.4.7-1.3.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.2 0 1.3.9 2.6 1.1 2.8.1.2 1.9 2.9 4.6 4 .6.3 1.1.4 1.5.5.6.2 1.2.2 1.6.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2-.1-.1-.2-.2-.5-.3z"/></svg>`;
 
-function slugify(cat, idx) {
-  return `${cat}-${idx}`;
+// Helper: todos los productos que pertenecen a una sección dada
+function productsInSection(section) {
+  return PRODUCTS.filter(p => p.sections && p.sections.includes(section));
 }
 
-function cardHTML(p, cat, idx) {
+function cardHTML(p) {
   const tag = p.status === "nuevo"
     ? `<span class="tag nuevo">Nuevo</span>`
     : p.status === "agotado"
@@ -27,7 +28,6 @@ function cardHTML(p, cat, idx) {
       : "";
 
   const isAgotado = p.status === "agotado";
-  const slug = slugify(cat, idx);
 
   const button = isAgotado
     ? `<div class="soon-note">Próximamente disponible</div><span class="btn disabled">${WHATSAPP_ICON} No disponible</span>`
@@ -35,7 +35,7 @@ function cardHTML(p, cat, idx) {
 
   return `
     <article class="card">
-      <a class="card-link" href="#detalle/${slug}">
+      <a class="card-link" href="#detalle/${p.id}">
         <div class="card-img">
           ${tag}
           <img src="${p.img}" alt="${p.collection} ${p.name}" loading="lazy">
@@ -50,34 +50,33 @@ function cardHTML(p, cat, idx) {
   `;
 }
 
-function renderGrid(id, items, cat) {
+function renderGrid(id, section) {
   const el = document.getElementById(id);
   if (!el) return;
-  el.innerHTML = items.map((p, idx) => cardHTML(p, cat, idx)).join("");
+  el.innerHTML = productsInSection(section).map(cardHTML).join("");
 }
 
-renderGrid("grid-destacados", PRODUCTS.destacados, "destacados");
-renderGrid("grid-pulsos", PRODUCTS.pulsos, "pulsos");
-renderGrid("grid-cadenas", PRODUCTS.cadenas, "cadenas");
+renderGrid("grid-destacados", "destacados");
+renderGrid("grid-pulsos", "pulsos");
+renderGrid("grid-cadenas", "cadenas");
 
 // Piezas de marca: layout más grande, dos columnas por producto
 (function renderMarca() {
   const el = document.getElementById("grid-marca");
   if (!el) return;
-  el.innerHTML = PRODUCTS.marca.map((p, idx) => {
+  el.innerHTML = productsInSection("marca").map(p => {
     const tag = p.status === "agotado" ? `<span class="tag agotado">Agotado</span>` : (p.status === "nuevo" ? `<span class="tag nuevo">Nuevo</span>` : "");
     const isAgotado = p.status === "agotado";
-    const slug = slugify("marca", idx);
     const button = isAgotado
       ? `<div class="soon-note">Próximamente disponible</div><span class="btn disabled">${WHATSAPP_ICON} No disponible</span>`
       : `<a class="btn" href="${whatsappLink(p)}" target="_blank" rel="noopener" style="max-width:280px;">${WHATSAPP_ICON} Comprar por WhatsApp</a>`;
     return `
       <div class="brand-card">
-        <a href="#detalle/${slug}" style="display:block;">
+        <a href="#detalle/${p.id}" style="display:block;">
           <div class="card-img">${tag}<img src="${p.img}" alt="${p.collection} ${p.name}" loading="lazy"></div>
         </a>
         <div class="brand-copy">
-          <a href="#detalle/${slug}" style="display:block;">
+          <a href="#detalle/${p.id}" style="display:block;">
             <span class="eyebrow">${p.collection}</span>
             <h3>${p.name}</h3>
             <div class="card-specs"><b>${p.specs}</b><br>${p.material}</div>
@@ -129,12 +128,8 @@ if (navToggle) {
 // Vista de detalle de producto
 // ============================================
 
-function getProductBySlug(slug) {
-  const lastDash = slug.lastIndexOf("-");
-  const cat = slug.substring(0, lastDash);
-  const idx = parseInt(slug.substring(lastDash + 1), 10);
-  if (!PRODUCTS[cat] || !PRODUCTS[cat][idx]) return null;
-  return { product: PRODUCTS[cat][idx], slug };
+function getProductById(id) {
+  return PRODUCTS.find(p => p.id === id) || null;
 }
 
 let currentDetailImages = [];
@@ -151,7 +146,7 @@ function setDetailImage(i) {
   if (counter) counter.textContent = `${currentDetailIndex + 1} / ${images.length}`;
 }
 
-function renderDetail(product, slug) {
+function renderDetail(product) {
   const images = product.images && product.images.length ? product.images : [product.img];
   currentDetailImages = images;
   currentDetailIndex = 0;
@@ -208,21 +203,30 @@ function renderDetail(product, slug) {
   `;
 
   // Barra fija inferior (solo se ve en móvil, por CSS)
-  document.getElementById("detailStickyBar").innerHTML = `
-    <div class="detail-sticky-price">${money(product.price)}</div>
-    ${button}
-  `;
+  const stickyBar = document.getElementById("detailStickyBar");
+  if (stickyBar) {
+    stickyBar.innerHTML = `
+      <div class="detail-sticky-price">${money(product.price)}</div>
+      ${button}
+    `;
+  }
 
-  // Miniaturas
+  // Miniaturas: click para saltar a esa foto
   document.querySelectorAll(".detail-thumb").forEach((thumb, i) => {
     thumb.addEventListener("click", () => setDetailImage(i));
   });
 
-  // Flechas prev/next
+  // Flechas prev/next: funcionan para cualquier producto que tenga 2+ fotos
   const prevBtn = document.querySelector(".detail-arrow-prev");
   const nextBtn = document.querySelector(".detail-arrow-next");
-  if (prevBtn) prevBtn.addEventListener("click", () => setDetailImage(currentDetailIndex - 1));
-  if (nextBtn) nextBtn.addEventListener("click", () => setDetailImage(currentDetailIndex + 1));
+  if (prevBtn) prevBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    setDetailImage(currentDetailIndex - 1);
+  });
+  if (nextBtn) nextBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    setDetailImage(currentDetailIndex + 1);
+  });
 
   // Swipe con el dedo en celular (deslizar la foto para cambiarla)
   if (images.length > 1) {
@@ -238,30 +242,37 @@ function renderDetail(product, slug) {
       if (diff < 0) setDetailImage(currentDetailIndex + 1); // deslizó a la izquierda -> siguiente
       else setDetailImage(currentDetailIndex - 1); // deslizó a la derecha -> anterior
     }, { passive: true });
+
+    // Flechas del teclado (izq/der) también funcionan, por si lo ven en compu
+    document.addEventListener("keydown", detailKeyHandler);
   }
 }
 
-function showDetail(product, slug) {
+function detailKeyHandler(e) {
+  if (e.key === "ArrowLeft") setDetailImage(currentDetailIndex - 1);
+  if (e.key === "ArrowRight") setDetailImage(currentDetailIndex + 1);
+}
+
+function showDetail(product) {
   document.getElementById("catalogView").style.display = "none";
   document.getElementById("product-detail").style.display = "block";
-  document.querySelector(".site-header").style.display = "none";
-  renderDetail(product, slug);
+  renderDetail(product);
   window.scrollTo(0, 0);
 }
 
 function showCatalogView() {
   document.getElementById("catalogView").style.display = "block";
   document.getElementById("product-detail").style.display = "none";
-  document.querySelector(".site-header").style.display = "block";
+  document.removeEventListener("keydown", detailKeyHandler);
 }
 
 function handleRoute() {
   const hash = window.location.hash;
   if (hash.startsWith("#detalle/")) {
-    const slug = hash.replace("#detalle/", "");
-    const found = getProductBySlug(slug);
-    if (found) {
-      showDetail(found.product, found.slug);
+    const id = hash.replace("#detalle/", "");
+    const product = getProductById(id);
+    if (product) {
+      showDetail(product);
       return;
     }
   }

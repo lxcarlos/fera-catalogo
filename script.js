@@ -2,7 +2,7 @@
 // FERA — Render de catálogo + integración WhatsApp
 // ============================================
 
-const INSTAGRAM_URL = "https://www.instagram.com/carlos_fera_/"; // <- pega aquí tu link de Instagram, ej: "https://instagram.com/fera.joyeria"
+const INSTAGRAM_URL = ""; // <- pega aquí tu link de Instagram, ej: "https://instagram.com/fera.joyeria"
 
 function money(n) {
   return "$" + n.toLocaleString("es-MX");
@@ -33,13 +33,23 @@ function cardHTML(p) {
     ? `<div class="soon-note">Próximamente disponible</div><span class="btn disabled">${WHATSAPP_ICON} No disponible</span>`
     : `<a class="btn" href="${whatsappLink(p)}" target="_blank" rel="noopener">${WHATSAPP_ICON} Comprar por WhatsApp</a>`;
 
+  // Si el producto tiene "video" (un archivo .mp4), se muestra como video
+  // vertical 3:4 que se reproduce solo, en bucle y sin sonido, apenas
+  // carga la página. Si no tiene "video", se muestra la foto normal.
+  const media = p.video
+    ? `<div class="card-img has-video">
+         ${tag}
+         <video src="${p.video}" poster="${p.img}" autoplay muted loop playsinline></video>
+       </div>`
+    : `<div class="card-img">
+         ${tag}
+         <img src="${p.img}" alt="${p.collection} ${p.name}" loading="lazy">
+       </div>`;
+
   return `
     <article class="card">
       <a class="card-link" href="#detalle/${p.id}">
-        <div class="card-img">
-          ${tag}
-          <img src="${p.img}" alt="${p.collection} ${p.name}" loading="lazy">
-        </div>
+        ${media}
         <div class="card-collection">${p.collection}</div>
         <h3>${p.name}</h3>
         <div class="card-specs"><b>${p.specs}</b><br>${p.material}</div>
@@ -70,10 +80,13 @@ renderGrid("grid-cadenas", "cadenas");
     const button = isAgotado
       ? `<div class="soon-note">Próximamente disponible</div><span class="btn disabled">${WHATSAPP_ICON} No disponible</span>`
       : `<a class="btn" href="${whatsappLink(p)}" target="_blank" rel="noopener" style="max-width:280px;">${WHATSAPP_ICON} Comprar por WhatsApp</a>`;
+    const media = p.video
+      ? `<div class="card-img has-video">${tag}<video src="${p.video}" poster="${p.img}" autoplay muted loop playsinline></video></div>`
+      : `<div class="card-img">${tag}<img src="${p.img}" alt="${p.collection} ${p.name}" loading="lazy"></div>`;
     return `
       <div class="brand-card">
         <a href="#detalle/${p.id}" style="display:block;">
-          <div class="card-img">${tag}<img src="${p.img}" alt="${p.collection} ${p.name}" loading="lazy"></div>
+          ${media}
         </a>
         <div class="brand-copy">
           <a href="#detalle/${p.id}" style="display:block;">

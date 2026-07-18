@@ -70,6 +70,7 @@ const PRODUCTS = [
       "assets/PULSOS/pulso-barbado-plata925/pulso-barbado-plata925-2.jpg",
       "assets/PULSOS/pulso-barbado-plata925/pulso-barbado-plata925-3.jpg"
     ],
+    video: "assets/PULSOS/pulso-barbado-plata925/VIDEO-pulso-barbado-plata925-1.mp4",
     status: "nuevo" },
 
     /*"cadena-torzal-50"*/ /*HAY QUE MODIFICAR PORQUE LA IMAGEN NO ENCAJA */

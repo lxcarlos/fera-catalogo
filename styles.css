@@ -163,14 +163,14 @@ nav.main-nav a:focus-visible::after {
   color: var(--ink-soft);
   font-size: 15px;
 }
-
+/*
 .hero-rule {
   width: 64px;
   height: 1px;
   background: var(--gold);
   margin: 20px auto 0;
   position: relative;
-}
+}*/
 .hero-rule::after {
   content: '';
   position: absolute;
@@ -182,7 +182,7 @@ nav.main-nav a:focus-visible::after {
 
 /* ---------- Section headers ---------- */
 .section {
-  padding: 64px 0 20px;
+  padding: 16px 0 10px;
 }
 
 .section-head {

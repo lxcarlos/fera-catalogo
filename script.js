@@ -2,7 +2,7 @@
 // FERA — Render de catálogo + integración WhatsApp
 // ============================================
 
-const INSTAGRAM_URL = ""; // <- pega aquí tu link de Instagram, ej: "https://instagram.com/fera.joyeria"
+const INSTAGRAM_URL = "https://www.instagram.com/carlos_fera_/"; // <- pega aquí tu link de Instagram, ej: "https://instagram.com/fera.joyeria"
 
 function money(n) {
   return "$" + n.toLocaleString("es-MX");

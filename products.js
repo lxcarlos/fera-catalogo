@@ -73,7 +73,7 @@ const PRODUCTS = [
     status: "nuevo" },
 
     /*"cadena-torzal-50"*/ /*HAY QUE MODIFICAR PORQUE LA IMAGEN NO ENCAJA */
-  { id: "cadena-torzal-50", sections: ["destacados", "cadenas"],
+  { id: "cadena-torzal-50", sections: [, "cadenas"],
     collection: "Cadena Clasics", name: "Torzal", specs: "50cm / 5mm", material: "Oro Laminado", price: 475,
     img: "assets/cadena-torzal-50.jpg", status: "nuevo" },
 
@@ -148,7 +148,7 @@ const PRODUCTS = [
     status: "nuevo" },
 
     /*"vancleef-negra"*/
-  { id: "vancleef-negra", sections: ["pulsos"],
+  { id: "vancleef-negra", sections: ["pulsos", "destacados"],
     collection: "Van Cleef", name: "Vintage Alhambra Onix", specs: "20cm", material: "Plata 925", price: 1260,
     img: "assets/PULSOS/vancleef-negra/vancleef-negra-1.jpg",
     images: [

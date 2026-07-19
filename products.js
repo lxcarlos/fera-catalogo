@@ -24,12 +24,6 @@ const PRODUCTS = [
     video: "assets/PULSOS/pulso-barbado-plata925/VIDEO-pulso-barbado-plata925-1.mp4",
     status: "nuevo" },
 
-    /*"cadena-torzal-50"*/ /*HAY QUE MODIFICAR PORQUE LA IMAGEN NO ENCAJA */
-  { id: "cadena-torzal-50", sections: ["cadenas"],
-    collection: "Cadena Clasics", name: "Torzal", specs: "50cm / 5mm", material: "Oro Laminado", price: 475,
-    img: "assets/cadena-torzal-50.jpg", status: "nuevo" },
-
-
     /*"vancleef-diamantada"*/
   { id: "vancleef-diamantada", sections: ["destacados", "pulsos"],
     collection: "Van Cleef", name: "Vintage Alhambra", specs: "20cm", material: "Plata 925", price: 1260,
@@ -117,40 +111,46 @@ const PRODUCTS = [
     ],
     status: "nuevo" },
 
-    /*"cadena-vibora"*/ /*ESTA MAL, HAY QUE MODIFICAR LA IMAGEN */
+    /*"cadena-torzal-50"*/ /*HAY QUE MODIFICAR PORQUE LA IMAGEN NO ENCAJA */
+  { id: "cadena-torzal-50", sections: ["cadenas"],
+    collection: "Cadena Clasics", name: "Torzal", specs: "50cm / 5mm", material: "Oro Laminado", price: 475,
+    img: "assets/CADENAS/cadena-torzal-grande/cadena-torzal-grande-1.jpg", status: "nuevo" },
+
+
+    /*"cadena-vibora"*/
   { id: "cadena-vibora", sections: ["cadenas"],
     collection: "Cadena Clasics", name: "Vibora", specs: "50cm / 5mm", material: "Oro Laminado", price: 400,
-    img: "assets/cadena-vibora.jpg", status: "nuevo" },
+    img: "assets/CADENAS/cadena-panza-vibora/cadena-panza-vibora-1.jpg", status: "disponible" },
 
-    /*"cadena-tubular"*/ /*ESTA MAL, HAY QUE MODIFICAR LA IMAGEN */
+    /*"cadena-tubular"*/
   { id: "cadena-tubular", sections: ["cadenas"],
     collection: "Cadena Clasics", name: "Tubular", specs: "55cm / 5mm", material: "Oro Laminado", price: 505,
-    img: "assets/cadena-tubular.jpg", status: "nuevo" },
+    img: "assets/CADENAS/cadena-tubular/cadena-tubular-1.jpg", status: "nuevo" },
 
-    /*"cadena-torzal-45"*/ /*ESTA MAL, HAY QUE MODIFICAR LA IMAGEN */
+    /*"cadena-torzal-CHICA"*/
   { id: "cadena-torzal-45", sections: ["cadenas"],
-    collection: "Cadena Clasics", name: "Torzal", specs: "45cm / 3mm", material: "Oro Laminado", price: 465,
-    img: "assets/cadena-torzal-45.jpg", status: "nuevo" },
+    collection: "Cadena Clasics", name: "Torzal Pequeña", specs: "45cm / 3mm", material: "Oro Laminado", price: 465,
+    img: "assets/CADENAS/cadena-torzal-pequeña/cadena-torzal-pequeña-1.jpg", status: "nuevo" },
 
     /*"cadena-hoja"*/ 
   { id: "cadena-hoja", sections: ["cadenas"],
     collection: "Cadena Clasics", name: "Hoja", specs: "55cm / 5mm", material: "Oro Laminado", price: 435,
-    img: "assets/cadena-hoja.jpg", status: "nuevo" },
+    img: "assets/CADENAS/cadena-hoja/cadena-hoja-1.jpg", status: "nuevo" },
 
     /*"cadena-espiga"*/ 
   { id: "cadena-espiga", sections: ["cadenas"],
     collection: "Cadena Clasics", name: "Espiga", specs: "45cm / 2mm", material: "Oro Laminado", price: 450,
-    img: "assets/cadena-espiga.jpg", status: "nuevo" },
+    img: "assets/CADENAS/cadena-espiga/cadena-espiga-1.jpg", status: "nuevo" },
 
     /*collar-corazon-oro*/
   { id: "collar-corazon-oro", sections: ["cadenas"],
     collection: "Collar Clasics", name: "Collar Corazon", specs: "45+5cm / 5mm", material: "Oro Laminado", price: 460,
-    img: "assets/collar-corazon-oro.jpg", status: "nuevo" },
+    img: "assets/CADENAS/collar-corazon-oro/collar-corazon-oro-1.jpg", status: "nuevo" },
 
     /*collar-corazon-acero*/
   { id: "collar-corazon-acero", sections: ["cadenas"],
     collection: "Collar Clasics", name: "Collar Corazon", specs: "45+5cm / 5mm", material: "Acero Inoxidable", price: 460,
-    img: "assets/collar-corazon-acero.jpg", status: "nuevo" },
+    img: "assets/CADENAS/collar-corazon-acero/collar-corazon-acero-1.jpg", status: "nuevo" },
 
     /*brazalete-hh-hermes*/
   { id: "brazalete-hh-hermes", sections: ["marca"],

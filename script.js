@@ -2,7 +2,7 @@
 // FERA — Render de catálogo + integración WhatsApp
 // ============================================
 
-const INSTAGRAM_URL = ""; // <- pega aquí tu link de Instagram, ej: "https://instagram.com/fera.joyeria"
+const INSTAGRAM_URL = "https://www.instagram.com/carlos_fera_/"; // <- pega aquí tu link de Instagram, ej: "https://instagram.com/fera.joyeria"
 
 function money(n) {
   return "$" + n.toLocaleString("es-MX");
@@ -17,8 +17,52 @@ const WHATSAPP_ICON = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12
 
 // Helper: todos los productos que pertenecen a una sección dada
 function productsInSection(section) {
-  return PRODUCTS.filter(p => p.sections && p.sections.includes(section));
+  return PRODUCTS.filter(p => p.sections && p.sections.includes(section) && passesFilters(p));
 }
+
+// ── Filtro por material y precio ──
+// currentFilters guarda lo que el usuario tiene seleccionado ahora mismo.
+// Usamos Set() en vez de un solo valor porque ahora se puede elegir MÁS
+// DE UNO a la vez (ej. "Oro Laminado" + "Plata 925" juntos). Un Set vacío
+// significa "sin restricción" — se muestran todos.
+const currentFilters = {
+  materials: new Set(),
+  priceRanges: new Set()
+};
+
+// Rangos de precio predefinidos. Cada uno tiene su "key" (para guardarlo
+// en el Set) y su "label" (lo que se ve en el botón). Ajusta estos
+// números o agrega más rangos si tu catálogo crece mucho.
+const PRICE_RANGES = [
+  { key: "hasta-400", label: "Hasta $400",     min: 0,    max: 400 },
+  { key: "400-800",   label: "$400 – $800",    min: 400,  max: 800 },
+  { key: "800-1500",  label: "$800 – $1,500",  min: 800,  max: 1500 },
+  { key: "mas-1500",  label: "Más de $1,500",  min: 1500, max: Infinity }
+];
+
+function passesFilters(p) {
+  const materialOk = currentFilters.materials.size === 0 || currentFilters.materials.has(p.material);
+  const priceOk = currentFilters.priceRanges.size === 0 || [...currentFilters.priceRanges].some(key => {
+    const range = PRICE_RANGES.find(r => r.key === key);
+    return range && p.price >= range.min && p.price <= range.max;
+  });
+  return materialOk && priceOk;
+}
+
+// ── Selección aleatoria de videos que se reproducen al cargar ──
+// En vez de que los N productos con video (p.video) se reproduzcan TODOS
+// de golpe al abrir la página (pesado, sobre todo en celular), elegimos al
+// azar solo 2 en cada visita. Los que no caen en la selección muestran
+// nada más su foto — ni siquiera se crea la etiqueta <video> para ellos,
+// así que el navegador no descarga ni un byte de esos archivos.
+// Bonus: cada visita puede mostrar una combinación distinta, dándole
+// variedad al catálogo sin que tú tengas que hacer nada manual.
+const AUTOPLAY_VIDEO_COUNT = 5;
+const videoProducts = PRODUCTS.filter(p => p.video);
+const shuffledVideoProducts = [...videoProducts].sort(() => Math.random() - 0.5);
+const autoplayVideoIds = new Set(
+  shuffledVideoProducts.slice(0, AUTOPLAY_VIDEO_COUNT).map(p => p.id)
+);
 
 // ── Helpers compartidos (antes duplicados entre cardHTML y renderMarca) ──
 
@@ -37,12 +81,22 @@ function buildButton(p, extraAttrs = "") {
 
 function buildMedia(p, wrapperClass = "card-img") {
   const tag = buildTag(p);
-  if (p.video) {
+
+  // Solo se crea la etiqueta <video> (y por lo tanto solo se descarga
+  // el archivo) si este producto cayó en la selección aleatoria de hoy.
+  if (p.video && autoplayVideoIds.has(p.id)) {
     return `<div class="${wrapperClass} has-video">
         ${tag}
         <video src="${p.video}" poster="${p.img}" autoplay muted loop playsinline></video>
       </div>`;
   }
+
+  // Si el producto tiene video pero no le tocó esta vez, lo mostramos
+  // EXACTAMENTE igual que un producto sin video: mismo contenedor
+  // cuadrado, mismo object-fit: contain (foto completa, sin recortar).
+  // Antes esto usaba el wrapper .has-video (fondo negro, proporción 3:4,
+  // recorte), y por eso Vintage Alhambra y Barbada se veían con más
+  // zoom que Figaro Torzal — eran dos estilos distintos sin querer.
   return `<div class="${wrapperClass}">
       ${tag}
       <img src="${p.img}" alt="${p.collection} ${p.name}" loading="lazy">
@@ -67,18 +121,25 @@ function cardHTML(p) {
 function renderGrid(id, section) {
   const el = document.getElementById(id);
   if (!el) return;
-  el.innerHTML = productsInSection(section).map(cardHTML).join("");
+  const items = productsInSection(section);
+  el.innerHTML = items.map(cardHTML).join("");
+
+  // Si el filtro deja esta sección sin productos, ocultamos la sección
+  // completa (encabezado incluido) en vez de mostrar un título con una
+  // cuadrícula vacía debajo, que se ve descuidado.
+  const sectionEl = document.getElementById(section);
+  if (sectionEl) {
+    sectionEl.style.display = items.length ? "" : "none";
+  }
+  return items.length;
 }
 
-renderGrid("grid-destacados", "destacados");
-renderGrid("grid-pulsos", "pulsos");
-renderGrid("grid-cadenas", "cadenas");
-
 // Piezas de marca: layout más grande, dos columnas por producto
-(function renderMarca() {
+function renderMarca() {
   const el = document.getElementById("grid-marca");
-  if (!el) return;
-  el.innerHTML = productsInSection("marca").map(p => `
+  if (!el) return 0;
+  const items = productsInSection("marca");
+  el.innerHTML = items.map(p => `
       <div class="brand-card">
         <a href="#detalle/${p.id}" style="display:block;">
           ${buildMedia(p)}
@@ -94,7 +155,123 @@ renderGrid("grid-cadenas", "cadenas");
         </div>
       </div>
     `).join("");
-})();
+
+  const sectionEl = document.getElementById("marca");
+  if (sectionEl) {
+    sectionEl.style.display = items.length ? "" : "none";
+  }
+  return items.length;
+}
+
+// Vuelve a dibujar las 4 secciones del catálogo con los filtros actuales.
+// Se llama una vez al cargar la página, y de nuevo cada vez que el
+// usuario cambia el material o el rango de precio.
+function renderCatalog() {
+  const counts = [
+    renderGrid("grid-destacados", "destacados"),
+    renderGrid("grid-pulsos", "pulsos"),
+    renderGrid("grid-cadenas", "cadenas"),
+    renderMarca()
+  ];
+
+  // Si absolutamente ningún producto coincide con el filtro elegido,
+  // mostramos un mensaje en vez de dejar la página en blanco y silenciosa.
+  const totalMatches = counts.reduce((sum, n) => sum + n, 0);
+  const emptyStateEl = document.getElementById("filterEmptyState");
+  if (emptyStateEl) {
+    emptyStateEl.style.display = totalMatches === 0 ? "block" : "none";
+  }
+}
+
+renderCatalog();
+
+// ── Chips de filtro (material y precio) ──
+// Ambos grupos funcionan igual, así que usamos una sola función genérica:
+// - clic en un chip normal: si ya estaba activo, se DESELECCIONA (esto es
+//   lo que resuelve "quiero poder quitar un filtro haciendo clic de nuevo").
+//   Si no estaba activo, se agrega al Set — así puedes tener varios
+//   chips activos a la vez (multi-selección).
+// - clic en "Todos": limpia el Set completo, es el "reset" de ese grupo.
+// Usamos un solo listener en el contenedor (delegación de eventos) en vez
+// de uno por botón — más simple y sigue funcionando aunque los botones
+// se regeneren dinámicamente.
+function setupChipGroup(containerEl, filterSet, onChange) {
+  if (!containerEl) return;
+  containerEl.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-value]");
+    if (!btn) return;
+    const value = btn.dataset.value;
+
+    if (value === "todos") {
+      filterSet.clear();
+    } else if (filterSet.has(value)) {
+      filterSet.delete(value);
+    } else {
+      filterSet.add(value);
+    }
+
+    containerEl.querySelectorAll("button[data-value]").forEach(b => {
+      const isActive = b.dataset.value === "todos"
+        ? filterSet.size === 0
+        : filterSet.has(b.dataset.value);
+      b.classList.toggle("active", isActive);
+    });
+
+    onChange();
+  });
+}
+
+function chipsHTML(options) {
+  return `
+    <button type="button" class="chip active" data-value="todos">Todos</button>
+    ${options.map(o => `<button type="button" class="chip" data-value="${o.value}">${o.label}</button>`).join("")}
+  `;
+}
+
+// Los chips de material se generan solos a partir de los materiales que
+// ya existen en tus productos (Set quita duplicados). Así, si agregas un
+// material nuevo a products.js en el futuro, el filtro se actualiza solo.
+const materialFilterEl = document.getElementById("filterMaterial");
+if (materialFilterEl) {
+  const materials = [...new Set(PRODUCTS.map(p => p.material))].sort();
+  materialFilterEl.innerHTML = chipsHTML(materials.map(m => ({ value: m, label: m })));
+  setupChipGroup(materialFilterEl, currentFilters.materials, renderCatalog);
+}
+
+const priceFilterEl = document.getElementById("filterPriceChips");
+if (priceFilterEl) {
+  priceFilterEl.innerHTML = chipsHTML(PRICE_RANGES.map(r => ({ value: r.key, label: r.label })));
+  setupChipGroup(priceFilterEl, currentFilters.priceRanges, renderCatalog);
+}
+
+const clearFiltersBtn = document.getElementById("filterClear");
+if (clearFiltersBtn) {
+  clearFiltersBtn.addEventListener("click", () => {
+    currentFilters.materials.clear();
+    currentFilters.priceRanges.clear();
+    document.querySelectorAll(".chip-group .chip").forEach(b => {
+      b.classList.toggle("active", b.dataset.value === "todos");
+    });
+    renderCatalog();
+  });
+}
+
+// ── Botón de lupa (en el header): muestra/oculta todo el panel de filtros ──
+// Como el botón vive arriba en el header y el panel está más abajo, junto
+// al catálogo, hacemos scroll suave hasta el panel cada vez que se abre —
+// así el usuario no tiene que buscarlo con la vista.
+const filterToggleBtn = document.getElementById("filterToggleBtn");
+const filterPanel = document.getElementById("filterPanel");
+if (filterToggleBtn && filterPanel) {
+  filterToggleBtn.addEventListener("click", () => {
+    const isOpen = filterPanel.classList.toggle("open");
+    filterToggleBtn.classList.toggle("active", isOpen);
+    filterToggleBtn.setAttribute("aria-expanded", String(isOpen));
+    if (isOpen) {
+      filterPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  });
+}
 
 // Header / footer WhatsApp links (mensaje genérico)
 const genericMsg = encodeURIComponent("Hola, vi su catálogo Fera y quiero hacer una pregunta.");

@@ -17,7 +17,7 @@
      Cambia og:url por tu dominio real cuando publiques el sitio, y og:image
      por una foto representativa del catálogo (ideal 1200x630px). -->
 <meta property="og:type" content="website">
-<meta property="og:title" conten  t="Fera — Catálogo de Joyería">
+<meta property="og:title" content="Fera — Catálogo de Joyería">
 <meta property="og:description" content="Pulsos, cadenas y collares en oro laminado y plata 925. Envíos 100% gratis a todo el país.">
 <meta property="og:image" content="https://tu-dominio.com/assets/PULSOS/vancleef-diamantada/vancleef-diamantada-1.png">
 <meta property="og:url" content="https://tu-dominio.com/">
@@ -32,6 +32,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+
+<!-- Google Analytics (GA4) ─────────────────────────────────────────
+     ID real de tu propiedad "Fera" en Google Analytics. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BW20DSWZFV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-BW20DSWZFV');
+</script>
 </head>
 <body>
 
@@ -43,7 +53,11 @@
       <a href="#pulsos">Pulsos</a>
       <a href="#cadenas">Cadenas</a>
       <a href="#marca">Piezas de Marca</a>
+      <a href="#faq">Preguntas Frecuentes</a>
     </nav>
+    <button type="button" id="filterToggleBtn" class="header-search-btn" aria-expanded="false" aria-controls="filterPanel" aria-label="Buscar y filtrar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
     <a class="header-cta" id="whatsapp-header" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8.9-.2.2-.3.2-.5.1-1.4-.7-2.4-1.3-3.3-2.9-.3-.4.2-.4.7-1.3.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.2 0 1.3.9 2.6 1.1 2.8.1.2 1.9 2.9 4.6 4 .6.3 1.1.4 1.5.5.6.2 1.2.2 1.6.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2-.1-.1-.2-.2-.5-.3z"/></svg>
       <span>WhatsApp</span>
@@ -62,6 +76,30 @@
   </section>
 
   <div class="wrap">
+
+    <!-- ============ FILTROS ============ -->
+    <!-- El panel se abre/cierra desde el botón de lupa en el header
+         (arriba de la página). Aquí solo vive el contenido del panel. -->
+    <div class="filter-panel" id="filterPanel">
+      <div class="filter-group">
+        <span class="filter-group-label">Material</span>
+        <div class="chip-group" id="filterMaterial">
+          <!-- Los botones se generan por JS a partir de los materiales
+               que existen en products.js — no hace falta editar esto a mano. -->
+        </div>
+      </div>
+      <div class="filter-group">
+        <span class="filter-group-label">Precio</span>
+        <div class="chip-group" id="filterPriceChips">
+          <!-- También se generan por JS, a partir de PRICE_RANGES en script.js -->
+        </div>
+      </div>
+      <button type="button" id="filterClear" class="filter-clear">Limpiar filtros</button>
+    </div>
+
+    <p id="filterEmptyState" class="filter-empty-state" style="display:none;">
+      No encontramos piezas con esos filtros. Prueba con otra combinación de material o precio.
+    </p>
 
     <!-- ============ DESTACADOS ============ -->
     <section class="section" id="destacados">
@@ -102,6 +140,58 @@
     </div>
     <div class="wrap" style="padding:0; max-width:100%;">
       <div id="grid-marca"></div>
+    </div>
+  </section>
+
+  <!-- ============ PREGUNTAS FRECUENTES ============ -->
+  <!-- Usamos <details>/<summary>, elementos NATIVOS de HTML: el navegador
+       ya sabe abrir/cerrar esto sin que escribamos ni una línea de
+       JavaScript. Es la opción más ligera posible y además viene con
+       accesibilidad de fábrica (funciona con teclado y lectores de
+       pantalla). -->
+  <section class="section" id="faq">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Preguntas Frecuentes</h2>
+        <span class="eyebrow">Todo lo que necesitas saber</span>
+      </div>
+
+      <div class="faq-list">
+
+        <details class="faq-item">
+          <summary>¿Hacen envíos a toda la República?</summary>
+          <p>Sí, hacemos envíos 100% gratis a toda la República Mexicana. En cuanto confirmamos tu pedido por WhatsApp, te compartimos tu número de guía para que puedas rastrearlo.</p>
+        </details>
+
+        <!-- ⚠️ EDITA ESTE NÚMERO: pon tu tiempo de entrega real -->
+        <details class="faq-item">
+          <summary>¿Cuánto tarda en llegar mi pedido?</summary>
+          <p>El tiempo de entrega es de entre 3 y 7 días hábiles, dependiendo de tu ubicación. Te avisamos por WhatsApp en cuanto tu pedido sale de nuestras manos.</p>
+        </details>
+
+        <!-- ⚠️ EDITA ESTE TEXTO: confirma tu garantía real (meses/años, qué cubre y qué no) -->
+        <details class="faq-item">
+          <summary>¿El oro laminado tiene garantía?</summary>
+          <p>Sí. Todas nuestras piezas de oro laminado cuentan con garantía de 3 meses contra defectos de fabricación (como despostillado o decoloración prematura del baño de oro). La garantía no cubre golpes, uso indebido, ni contacto con agua de mar, cloro, perfumes o productos químicos, ya que estos deterioran el laminado de cualquier pieza, sin importar la marca.</p>
+        </details>
+
+        <!-- ⚠️ EDITA ESTE TEXTO: confirma tus días reales para cambios/devoluciones -->
+        <details class="faq-item">
+          <summary>¿Puedo cambiar o devolver mi pedido?</summary>
+          <p>Aceptamos cambios dentro de los primeros 5 días después de recibir tu pedido, siempre que la pieza esté sin uso y en su empaque original. Para iniciar un cambio, solo escríbenos por WhatsApp con tu número de pedido y te guiamos paso a paso.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>¿Cómo cuido mi joya para que dure más?</summary>
+          <p>Evita que tu pieza tenga contacto con perfumes, cremas, cloro o agua de mar. Te recomendamos guardarla en un lugar seco cuando no la uses, y limpiarla de vez en cuando con un paño suave y seco.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>¿Cómo hago mi pedido?</summary>
+          <p>Elige la pieza que te guste en el catálogo y presiona "Comprar por WhatsApp" — te llevará directo a un chat con el mensaje del producto ya escrito. Ahí confirmamos disponibilidad, forma de pago y tus datos de envío.</p>
+        </details>
+
+      </div>
     </div>
   </section>
 

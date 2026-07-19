@@ -20,42 +20,46 @@ function productsInSection(section) {
   return PRODUCTS.filter(p => p.sections && p.sections.includes(section));
 }
 
+// ── Helpers compartidos (antes duplicados entre cardHTML y renderMarca) ──
+
+function buildTag(p) {
+  if (p.status === "nuevo") return `<span class="tag nuevo">Nuevo</span>`;
+  if (p.status === "agotado") return `<span class="tag agotado">Agotado</span>`;
+  return "";
+}
+
+function buildButton(p, extraAttrs = "") {
+  if (p.status === "agotado") {
+    return `<div class="soon-note">Próximamente disponible</div><span class="btn disabled">${WHATSAPP_ICON} No disponible</span>`;
+  }
+  return `<a class="btn" href="${whatsappLink(p)}" target="_blank" rel="noopener" ${extraAttrs}>${WHATSAPP_ICON} Comprar por WhatsApp</a>`;
+}
+
+function buildMedia(p, wrapperClass = "card-img") {
+  const tag = buildTag(p);
+  if (p.video) {
+    return `<div class="${wrapperClass} has-video">
+        ${tag}
+        <video src="${p.video}" poster="${p.img}" autoplay muted loop playsinline></video>
+      </div>`;
+  }
+  return `<div class="${wrapperClass}">
+      ${tag}
+      <img src="${p.img}" alt="${p.collection} ${p.name}" loading="lazy">
+    </div>`;
+}
+
 function cardHTML(p) {
-  const tag = p.status === "nuevo"
-    ? `<span class="tag nuevo">Nuevo</span>`
-    : p.status === "agotado"
-      ? `<span class="tag agotado">Agotado</span>`
-      : "";
-
-  const isAgotado = p.status === "agotado";
-
-  const button = isAgotado
-    ? `<div class="soon-note">Próximamente disponible</div><span class="btn disabled">${WHATSAPP_ICON} No disponible</span>`
-    : `<a class="btn" href="${whatsappLink(p)}" target="_blank" rel="noopener">${WHATSAPP_ICON} Comprar por WhatsApp</a>`;
-
-  // Si el producto tiene "video" (un archivo .mp4), se muestra como video
-  // vertical 3:4 que se reproduce solo, en bucle y sin sonido, apenas
-  // carga la página. Si no tiene "video", se muestra la foto normal.
-  const media = p.video
-    ? `<div class="card-img has-video">
-         ${tag}
-         <video src="${p.video}" poster="${p.img}" autoplay muted loop playsinline></video>
-       </div>`
-    : `<div class="card-img">
-         ${tag}
-         <img src="${p.img}" alt="${p.collection} ${p.name}" loading="lazy">
-       </div>`;
-
   return `
     <article class="card">
       <a class="card-link" href="#detalle/${p.id}">
-        ${media}
+        ${buildMedia(p)}
         <div class="card-collection">${p.collection}</div>
         <h3>${p.name}</h3>
         <div class="card-specs"><b>${p.specs}</b><br>${p.material}</div>
         <div class="price">${money(p.price)}</div>
       </a>
-      ${button}
+      ${buildButton(p)}
     </article>
   `;
 }
@@ -74,19 +78,10 @@ renderGrid("grid-cadenas", "cadenas");
 (function renderMarca() {
   const el = document.getElementById("grid-marca");
   if (!el) return;
-  el.innerHTML = productsInSection("marca").map(p => {
-    const tag = p.status === "agotado" ? `<span class="tag agotado">Agotado</span>` : (p.status === "nuevo" ? `<span class="tag nuevo">Nuevo</span>` : "");
-    const isAgotado = p.status === "agotado";
-    const button = isAgotado
-      ? `<div class="soon-note">Próximamente disponible</div><span class="btn disabled">${WHATSAPP_ICON} No disponible</span>`
-      : `<a class="btn" href="${whatsappLink(p)}" target="_blank" rel="noopener" style="max-width:280px;">${WHATSAPP_ICON} Comprar por WhatsApp</a>`;
-    const media = p.video
-      ? `<div class="card-img has-video">${tag}<video src="${p.video}" poster="${p.img}" autoplay muted loop playsinline></video></div>`
-      : `<div class="card-img">${tag}<img src="${p.img}" alt="${p.collection} ${p.name}" loading="lazy"></div>`;
-    return `
+  el.innerHTML = productsInSection("marca").map(p => `
       <div class="brand-card">
         <a href="#detalle/${p.id}" style="display:block;">
-          ${media}
+          ${buildMedia(p)}
         </a>
         <div class="brand-copy">
           <a href="#detalle/${p.id}" style="display:block;">
@@ -95,11 +90,10 @@ renderGrid("grid-cadenas", "cadenas");
             <div class="card-specs"><b>${p.specs}</b><br>${p.material}</div>
             <div class="price">${money(p.price)}</div>
           </a>
-          ${button}
+          ${buildButton(p, 'style="max-width:280px;"')}
         </div>
       </div>
-    `;
-  }).join("");
+    `).join("");
 })();
 
 // Header / footer WhatsApp links (mensaje genérico)
@@ -108,13 +102,14 @@ const genericLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${genericMsg}`;
 document.getElementById("whatsapp-header").href = genericLink;
 document.getElementById("whatsapp-footer").href = genericLink;
 
-// Instagram link
+// Instagram link — si no hay URL configurada, ocultamos el ícono
+// en vez de dejarlo ahí sin hacer nada al usuario dar click.
 const igEl = document.getElementById("instagram-footer");
 if (igEl) {
   if (INSTAGRAM_URL) {
     igEl.href = INSTAGRAM_URL;
   } else {
-    igEl.addEventListener("click", (e) => e.preventDefault());
+    igEl.style.display = "none";
   }
 }
 
@@ -225,16 +220,8 @@ function renderDetail(product) {
        <span class="detail-counter" id="detailCounter">1 / ${mediaItems.length}</span>`
     : "";
 
-  const tag = product.status === "nuevo"
-    ? `<span class="tag nuevo">Nuevo</span>`
-    : product.status === "agotado"
-      ? `<span class="tag agotado">Agotado</span>`
-      : "";
-
-  const isAgotado = product.status === "agotado";
-  const button = isAgotado
-    ? `<div class="soon-note">Próximamente disponible</div><span class="btn disabled">${WHATSAPP_ICON} No disponible</span>`
-    : `<a class="btn" href="${whatsappLink(product)}" target="_blank" rel="noopener">${WHATSAPP_ICON} Comprar por WhatsApp</a>`;
+  const tag = buildTag(product);
+  const button = buildButton(product);
 
   // La imagen principal Y el video viven en el mismo cuadro (#detailMainImg),
   // uno se oculta y el otro se muestra según el slide activo (ver goToSlide).
@@ -303,8 +290,17 @@ function renderDetail(product) {
       if (diff < 0) goToSlide(currentDetailIndex + 1);
       else goToSlide(currentDetailIndex - 1);
     }, { passive: true });
+  }
 
-    // Flechas del teclado (izq/der), por si lo ven en computadora
+  // Flechas del teclado (izq/der), por si lo ven en computadora.
+  // IMPORTANTE: quitamos el listener anterior antes de agregar uno nuevo,
+  // porque renderDetail() puede llamarse varias veces seguidas (ej. navegando
+  // de un producto a otro con el botón atrás/adelante del navegador) sin pasar
+  // siempre por showCatalogView(). Sin este removeEventListener, cada visita
+  // a un detalle agrega un listener extra y las flechas terminan moviendo
+  // varios slides de golpe por cada tecla presionada.
+  document.removeEventListener("keydown", detailKeyHandler);
+  if (mediaItems.length > 1) {
     document.addEventListener("keydown", detailKeyHandler);
   }
 }

@@ -145,44 +145,84 @@ function getProductById(id) {
   return PRODUCTS.find(p => p.id === id) || null;
 }
 
-let currentDetailImages = [];
+/************************************ */
+let currentDetailMedia = [];
 let currentDetailIndex = 0;
 
-function setDetailImage(i) {
-  const images = currentDetailImages;
-  currentDetailIndex = (i + images.length) % images.length;
-  document.querySelector("#detailMainImg img").src = images[currentDetailIndex];
+// Cambia el slide activo del carrusel (funciona igual para fotos y para el video)
+function goToSlide(i) {
+  const items = currentDetailMedia;
+  currentDetailIndex = (i + items.length) % items.length;
+  const item = items[currentDetailIndex];
+
+  const imgEl = document.getElementById("detailImgEl");
+  const videoEl = document.getElementById("detailVideoEl");
+  const mainBox = document.getElementById("detailMainImg");
+
+  // Si el slide anterior era el video, lo pausamos para que no siga sonando de fondo
+  if (!videoEl.paused) videoEl.pause();
+
+  if (item.type === "video") {
+    mainBox.classList.add("video-active");
+    imgEl.style.display = "none";
+    videoEl.style.display = "block";
+    if (videoEl.src !== item.src) videoEl.src = item.src;
+    videoEl.currentTime = 0;
+    videoEl.muted = false; // queremos que se escuche
+    const playPromise = videoEl.play();
+    if (playPromise) {
+      playPromise.catch(() => {
+        // Si el navegador bloquea el audio automático, lo intentamos silenciado
+        // (el usuario puede darle al ícono de sonido del propio reproductor)
+        videoEl.muted = true;
+        videoEl.play();
+      });
+    }
+  } else {
+    mainBox.classList.remove("video-active");
+    videoEl.style.display = "none";
+    imgEl.style.display = "block";
+    imgEl.src = item.src;
+  }
+
   document.querySelectorAll(".detail-thumb").forEach((t, idx) => {
     t.classList.toggle("active", idx === currentDetailIndex);
   });
   const counter = document.getElementById("detailCounter");
-  if (counter) counter.textContent = `${currentDetailIndex + 1} / ${images.length}`;
+  if (counter) counter.textContent = `${currentDetailIndex + 1} / ${items.length}`;
 }
 
 function renderDetail(product) {
-  const images = product.images && product.images.length ? product.images : [product.img];
-  currentDetailImages = images;
+  // Armamos la lista de fotos
+  const photos = product.images && product.images.length ? product.images : [product.img];
+
+  // Convertimos todo a un solo arreglo de "slides": { type: "image" | "video", src }
+  let mediaItems = photos.map(src => ({ type: "image", src }));
+
+  // ── AQUÍ SE INSERTA EL VIDEO, SI EL PRODUCTO TIENE UNO ──
+  // Lo ponemos en la posición 2 (justo después de la foto principal),
+  // sin importar cuántas fotos tenga el producto.
+  if (product.video) {
+    mediaItems.splice(1, 0, { type: "video", src: product.video });
+  }
+
+  currentDetailMedia = mediaItems;
   currentDetailIndex = 0;
 
-  const thumbsHTML = images.length > 1
-    ? `<div class="detail-thumbs">${images.map((src, i) =>
-        `<div class="detail-thumb ${i === 0 ? "active" : ""}" data-src="${src}">
-           <img src="${src}" alt="${product.name} foto ${i + 1}">
-         </div>`).join("")}</div>`
+  // Miniaturas: las de foto muestran la foto; la del video muestra la foto principal
+  // con un icono de "play" encima, para que se note que ahí hay un video.
+  const thumbsHTML = mediaItems.length > 1
+    ? `<div class="detail-thumbs">${mediaItems.map((item, i) => `
+        <div class="detail-thumb ${i === 0 ? "active" : ""}" data-index="${i}">
+          <img src="${item.type === "video" ? product.img : item.src}" alt="${product.name} ${i + 1}">
+          ${item.type === "video" ? `<span class="thumb-play">&#9654;</span>` : ""}
+        </div>`).join("")}</div>`
     : "";
 
-  const arrowsHTML = images.length > 1
-    ? `<button class="detail-arrow detail-arrow-prev" aria-label="Foto anterior">&#10094;</button>
-       <button class="detail-arrow detail-arrow-next" aria-label="Foto siguiente">&#10095;</button>
-       <span class="detail-counter" id="detailCounter">1 / ${images.length}</span>`
-    : "";
-
-  const videoHTML = product.video
-    ? `<div class="detail-video">
-         ${product.video.endsWith(".mp4")
-            ? `<video src="${product.video}" controls></video>`
-            : `<iframe src="${product.video}" allowfullscreen></iframe>`}
-       </div>`
+  const arrowsHTML = mediaItems.length > 1
+    ? `<button class="detail-arrow detail-arrow-prev" aria-label="Anterior">&#10094;</button>
+       <button class="detail-arrow detail-arrow-next" aria-label="Siguiente">&#10095;</button>
+       <span class="detail-counter" id="detailCounter">1 / ${mediaItems.length}</span>`
     : "";
 
   const tag = product.status === "nuevo"
@@ -196,14 +236,16 @@ function renderDetail(product) {
     ? `<div class="soon-note">Próximamente disponible</div><span class="btn disabled">${WHATSAPP_ICON} No disponible</span>`
     : `<a class="btn" href="${whatsappLink(product)}" target="_blank" rel="noopener">${WHATSAPP_ICON} Comprar por WhatsApp</a>`;
 
+  // La imagen principal Y el video viven en el mismo cuadro (#detailMainImg),
+  // uno se oculta y el otro se muestra según el slide activo (ver goToSlide).
   document.getElementById("detailGallery").innerHTML = `
     <div class="detail-main-img" id="detailMainImg">
       ${tag}
-      <img src="${images[0]}" alt="${product.collection} ${product.name}">
+      <img id="detailImgEl" src="${mediaItems[0].src}" alt="${product.collection} ${product.name}">
+      <video id="detailVideoEl" style="display:none;" playsinline controls loop></video>
       ${arrowsHTML}
     </div>
     ${thumbsHTML}
-    ${videoHTML}
   `;
 
   document.getElementById("detailInfo").innerHTML = `
@@ -224,25 +266,31 @@ function renderDetail(product) {
     `;
   }
 
-  // Miniaturas: click para saltar a esa foto
+  // Si el primer slide ya es el video (no debería pasar con la posición 2,
+  // pero por si acaso cambias el orden más adelante), lo arrancamos también.
+  if (mediaItems[0].type === "video") {
+    goToSlide(0);
+  }
+
+  // Miniaturas: click para saltar a esa foto o video
   document.querySelectorAll(".detail-thumb").forEach((thumb, i) => {
-    thumb.addEventListener("click", () => setDetailImage(i));
+    thumb.addEventListener("click", () => goToSlide(i));
   });
 
-  // Flechas prev/next: funcionan para cualquier producto que tenga 2+ fotos
+  // Flechas prev/next
   const prevBtn = document.querySelector(".detail-arrow-prev");
   const nextBtn = document.querySelector(".detail-arrow-next");
   if (prevBtn) prevBtn.addEventListener("click", (e) => {
     e.preventDefault();
-    setDetailImage(currentDetailIndex - 1);
+    goToSlide(currentDetailIndex - 1);
   });
   if (nextBtn) nextBtn.addEventListener("click", (e) => {
     e.preventDefault();
-    setDetailImage(currentDetailIndex + 1);
+    goToSlide(currentDetailIndex + 1);
   });
 
-  // Swipe con el dedo en celular (deslizar la foto para cambiarla)
-  if (images.length > 1) {
+  // Swipe con el dedo en celular (deslizar para cambiar de foto/video)
+  if (mediaItems.length > 1) {
     const mainImgEl = document.getElementById("detailMainImg");
     let touchStartX = 0;
     mainImgEl.addEventListener("touchstart", (e) => {
@@ -252,18 +300,18 @@ function renderDetail(product) {
       const touchEndX = e.changedTouches[0].screenX;
       const diff = touchEndX - touchStartX;
       if (Math.abs(diff) < 40) return; // muy corto, no cuenta como swipe
-      if (diff < 0) setDetailImage(currentDetailIndex + 1); // deslizó a la izquierda -> siguiente
-      else setDetailImage(currentDetailIndex - 1); // deslizó a la derecha -> anterior
+      if (diff < 0) goToSlide(currentDetailIndex + 1);
+      else goToSlide(currentDetailIndex - 1);
     }, { passive: true });
 
-    // Flechas del teclado (izq/der) también funcionan, por si lo ven en compu
+    // Flechas del teclado (izq/der), por si lo ven en computadora
     document.addEventListener("keydown", detailKeyHandler);
   }
 }
 
 function detailKeyHandler(e) {
-  if (e.key === "ArrowLeft") setDetailImage(currentDetailIndex - 1);
-  if (e.key === "ArrowRight") setDetailImage(currentDetailIndex + 1);
+  if (e.key === "ArrowLeft") goToSlide(currentDetailIndex - 1);
+  if (e.key === "ArrowRight") goToSlide(currentDetailIndex + 1);
 }
 
 function showDetail(product) {
@@ -277,7 +325,11 @@ function showCatalogView() {
   document.getElementById("catalogView").style.display = "block";
   document.getElementById("product-detail").style.display = "none";
   document.removeEventListener("keydown", detailKeyHandler);
+  // Si había un video reproduciéndose, lo detenemos al salir de la vista
+  const videoEl = document.getElementById("detailVideoEl");
+  if (videoEl) videoEl.pause();
 }
+/*********************** */
 
 function handleRoute() {
   const hash = window.location.hash;

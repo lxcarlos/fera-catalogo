@@ -10,6 +10,7 @@ const PRODUCTS = [
       "assets/PULSOS/pulso-figaro-torzal/pulso-figaro-torzal-2.jpg",
       "assets/PULSOS/pulso-figaro-torzal/pulso-figaro-torzal-3.jpg"
     ],
+    video: "assets/PULSOS/pulso-figaro-torzal/VIDEO-pulso-figaro-torzal-1.mp4",
     status: "nuevo" },
 
       /*"pulso-barbado-plata925"*/
@@ -40,6 +41,7 @@ const PRODUCTS = [
       /*"assets/PULSOS/vancleef-diamantada/vancleef-diamantada-9.jpg",
       "assets/PULSOS/vancleef-diamantada/vancleef-diamantada-10.jpg"*/
     ],
+    video: "assets/PULSOS/vancleef-diamantada/VIDEO-vancleef-diamantada-1.mp4",
     status: "nuevo" },
 
     /*"pulso-figaro*/
@@ -51,6 +53,7 @@ const PRODUCTS = [
       "assets/PULSOS/pulso-figaro/pulso-figaro-2.jpg",
       "assets/PULSOS/pulso-figaro/pulso-figaro-3.jpg"
     ],
+    video: "assets/PULSOS/pulso-figaro/VIDEO-pulso-figaro-1.mp4",
     status: "nuevo" },
 
     /*"pulso-panza-vivora-ol"*/
@@ -116,6 +119,7 @@ const PRODUCTS = [
       "assets/PULSOS/vancleef-negra/vancleef-negra-2.jpg",
       "assets/PULSOS/vancleef-negra/vancleef-negra-3.jpg"
     ],
+    video: "assets/PULSOS/vancleef-negra/VIDEO-vancleef-negra-1.mp4",
     status: "nuevo" },
 
     /*"cadena-torzal-50"*/ /*HAY QUE MODIFICAR PORQUE LA IMAGEN NO ENCAJA */

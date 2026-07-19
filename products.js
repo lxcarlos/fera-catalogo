@@ -40,7 +40,7 @@ const PRODUCTS = [
       "assets/PULSOS/vancleef-diamantada/vancleef-diamantada-8.jpg",
       /*"assets/PULSOS/vancleef-diamantada/vancleef-diamantada-9.jpg",
       "assets/PULSOS/vancleef-diamantada/vancleef-diamantada-10.jpg"*/
-    ],
+    ],  
     video: "assets/PULSOS/vancleef-diamantada/VIDEO-vancleef-diamantada-1.mp4",
     status: "nuevo" },
 

@@ -40,7 +40,7 @@ function buildMedia(p, wrapperClass = "card-img") {
   if (p.video) {
     return `<div class="${wrapperClass} has-video">
         ${tag}
-        <video src="${p.video}" poster="${p.img}" autoplay muted loop playsinline></video>
+        <video src="${p.video}" poster="${p.img}" muted loop playsinline></video>
       </div>`;
   }
   return `<div class="${wrapperClass}">
@@ -95,6 +95,25 @@ renderGrid("grid-cadenas", "cadenas");
       </div>
     `).join("");
 })();
+
+// Reproduce los videos de producto solo cuando el usuario los tiene
+// visibles en pantalla al hacer scroll, no todos de golpe al cargar
+// la página. Esto ahorra datos y hace que cargue mucho más rápido,
+// sobre todo en celular con conexión lenta.
+const videoObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    const video = entry.target;
+    if (entry.isIntersecting) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  });
+}, { threshold: 0.5 }); // se activa cuando al menos el 50% del video es visible
+
+document.querySelectorAll(".card-img.has-video video").forEach((video) => {
+  videoObserver.observe(video);
+});
 
 // Header / footer WhatsApp links (mensaje genérico)
 const genericMsg = encodeURIComponent("Hola, vi su catálogo Fera y quiero hacer una pregunta.");

@@ -79,18 +79,25 @@ const PRODUCTS = [
 
     /*"pulsera-torzal"*/
   { id: "pulsera-torzal", sections: ["pulsos"],
-    collection: "Pulsera Clasics", name: "Torzal", specs: "21.5cm / 4mm", material: "Oro Laminado", price: 229,
-    img: "assets/pulso-torzal-broche.jpg", 
+    collection: "Pulsera Clasics", name: "Torzal", specs: "21.5cm / 4mm", material: "Oro Laminado", price: 550,
+    img: "assets/PULSOS/pulso-torzal-broche/pulso-torzal-broche-1.jpg",
+    images: [
+      "assets/PULSOS/pulso-torzal-broche/pulso-torzal-broche-1.jpg",
+      "assets/PULSOS/pulso-torzal-broche/pulso-torzal-broche-2.png",
+      "assets/PULSOS/pulso-torzal-broche/pulso-torzal-broche-3.png",
+      "assets/PULSOS/pulso-torzal-broche/pulso-torzal-broche-4.png",
+      "assets/PULSOS/pulso-torzal-broche/pulso-torzal-broche-5.png"
+    ],
     status: "nuevo" },
 
     /*"pulsera-pandora"*/
   { id: "pulsera-pandora", sections: ["pulsos"],
     collection: "Pulsera Clasics", name: "Pandora", specs: "21.5cm / 4mm", material: "Acero Inoxidable", price: 395,
-    img: "assets/pulsera-pandora.jpg", status: "nuevo" },
+    img: "assets/PULSOS/pulsera-pandora/pulsera-pandora-1.jpg", status: "nuevo" },
 
     /*"pulso-tenis-diamantado"*/
   { id: "pulso-tenis-diamantado", sections: ["pulsos"],
-    collection: "Pulso Tenis", name: "Diamantado", specs: "20cm / 5mm", material: "Plata 925", price: 1490,
+    collection: "Pulso Clasics", name: "Tenis Diamantado", specs: "20cm / 5mm", material: "Plata 925", price: 1490,
     img: "assets/PULSOS/pulso-tenis-diamantado/pulso-tenis-diamantado-1.jpg",
     images: [
       "assets/PULSOS/pulso-tenis-diamantado/pulso-tenis-diamantado-1.jpg",
@@ -102,7 +109,7 @@ const PRODUCTS = [
 
     /*"vancleef-negra"*/
   { id: "vancleef-negra", sections: ["pulsos", "destacados"],
-    collection: "Van Cleef", name: "Vintage Alhambra Onix", specs: "20cm", material: "Plata 925", price: 1260,
+    collection: "Van Cleef", name: "Vintage Alhambra Negro", specs: "20cm", material: "Plata 925", price: 1260,
     img: "assets/PULSOS/vancleef-negra/vancleef-negra-1.jpg",
     images: [
       "assets/PULSOS/vancleef-negra/vancleef-negra-1.jpg",
@@ -154,12 +161,12 @@ const PRODUCTS = [
 
     /*brazalete-hh-hermes*/
   { id: "brazalete-hh-hermes", sections: ["marca"],
-    collection: "Brazalete HH", name: "Hermes", specs: "19cm / 1.2cm", material: "Acero Inoxidable", price: 1610,
+    collection: "Hermes", name: "Brazalete HH", specs: "19cm / 1.2cm", material: "Acero Inoxidable", price: 1610,
     img: "assets/PULSOS/brazalete-hh-hermes/brazalete-hh-hermes-1.jpg", status: "agotado" },
 
     /*pulsera-trinity-cartier*/
   { id: "pulsera-trinity-cartier", sections: ["marca"],
-    collection: "Pulsera Trinity", name: "Cartier", specs: "19cm / 1.2cm", material: "Acero Inoxidable", price: 2610,
+    collection: "Cartier", name: "pulsera-trinity-cartier", specs: "19cm / 1.2cm", material: "Acero Inoxidable", price: 2610,
     img: "assets/PULSOS/pulsera-cartier/pulsera-cartier-1.jpg", status: "agotado" },
 
 ];

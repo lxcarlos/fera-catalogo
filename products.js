@@ -155,11 +155,11 @@ const PRODUCTS = [
     /*brazalete-hh-hermes*/
   { id: "brazalete-hh-hermes", sections: ["marca"],
     collection: "Brazalete HH", name: "Hermes", specs: "19cm / 1.2cm", material: "Acero Inoxidable", price: 1610,
-    img: "assets/brazalete-hh-hero.jpg", status: "agotado" },
+    img: "assets/PULSOS/brazalete-hh-hermes/brazalete-hh-hermes-1.jpg", status: "agotado" },
 
     /*pulsera-trinity-cartier*/
   { id: "pulsera-trinity-cartier", sections: ["marca"],
     collection: "Pulsera Trinity", name: "Cartier", specs: "19cm / 1.2cm", material: "Acero Inoxidable", price: 2610,
-    img: "assets/trinity-detalle.jpg", status: "agotado" },
+    img: "assets/PULSOS/pulsera-cartier/pulsera-cartier-1.jpg", status: "agotado" },
 
 ];

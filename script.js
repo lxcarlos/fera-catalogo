@@ -144,6 +144,17 @@ function getProductById(id) {
 let currentDetailMedia = [];
 let currentDetailIndex = 0;
 
+// El navegador solo dispara una animación CSS (@keyframes) la primera vez
+// que el elemento aparece. Para que se repita cada vez que cambiamos de
+// slide, hay que quitarla, forzar un "reflow" (leer offsetWidth engaña al
+// navegador para que aplique el cambio ya) y volver a ponerla. Es un truco
+// común y muy barato en rendimiento — nada de librerías de animación.
+function restartAnimation(el) {
+  el.style.animation = "none";
+  void el.offsetWidth;
+  el.style.animation = "";
+}
+
 // Cambia el slide activo del carrusel (funciona igual para fotos y para el video)
 function goToSlide(i) {
   const items = currentDetailMedia;
@@ -162,6 +173,7 @@ function goToSlide(i) {
     imgEl.style.display = "none";
     videoEl.style.display = "block";
     if (videoEl.src !== item.src) videoEl.src = item.src;
+    restartAnimation(videoEl);
     videoEl.currentTime = 0;
     videoEl.muted = false; // queremos que se escuche
     const playPromise = videoEl.play();
@@ -178,6 +190,7 @@ function goToSlide(i) {
     videoEl.style.display = "none";
     imgEl.style.display = "block";
     imgEl.src = item.src;
+    restartAnimation(imgEl);
   }
 
   document.querySelectorAll(".detail-thumb").forEach((t, idx) => {

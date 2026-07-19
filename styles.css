@@ -495,6 +495,18 @@ footer .eyebrow { color: var(--gold-light); }
 .detail-main-img img { mix-blend-mode: multiply; }
 .detail-main-img.video-active { background: #000; }
 
+/* Animación del carrusel: fade + leve escala al cambiar de slide.
+   Es solo CSS (opacity/transform), así que el navegador lo acelera
+   por GPU y no pesa nada, ni siquiera en celulares modestos. */
+.detail-main-img img,
+.detail-main-img video {
+  animation: feraSlideIn 0.35s ease;
+}
+@keyframes feraSlideIn {
+  from { opacity: 0; transform: scale(1.03); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
 .thumb-play {
   position: absolute;
   width: 20px; height: 20px;

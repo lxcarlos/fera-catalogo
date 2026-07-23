@@ -81,6 +81,18 @@ img { display: block; max-width: 100%; }
   font-weight: 600;
 }
 
+.logo {
+  font-size: 80px;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+.logo img {
+  height: 80px;
+  width: auto;
+  display: block;
+}
+
 nav.main-nav {
   display: flex;
   gap: 34px;

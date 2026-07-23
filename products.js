@@ -108,6 +108,7 @@ const PRODUCTS = [
       "assets/PULSOS/pulso-tenis-diamantado/pulso-tenis-diamantado-3.jpg",
       "assets/PULSOS/pulso-tenis-diamantado/pulso-tenis-diamantado-4.jpg"
     ],
+    video: "assets/PULSOS/pulso-tenis-diamantado/VIDEO-pulso-tenis-diamantado-1.mp4",
     status: "nuevo" },
 
     /*"vancleef-negra"*/

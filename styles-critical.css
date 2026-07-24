@@ -359,3 +359,11 @@ nav.main-nav a {
   .btn { font-size: 9px; padding: 8px 6px; letter-spacing: 0.04em; gap: 4px; }
   .tag { font-size: 9px; padding: 3px 7px; top: 6px; left: 6px; }
 }
+
+
+
+.filter-panel {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}

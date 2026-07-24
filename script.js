@@ -158,13 +158,10 @@ function setResponsiveImageSource(imgEl, src, sizesAttr) {
   imgEl.setAttribute("sizes", sizesAttr);
 }
 
-
-function buildMedia(p, wrapperClass = "card-img", isPriority = false) {
+function buildMedia(p, wrapperClass = "card-img") {
   const tag = buildTag(p);
   const cardSizes = "(max-width: 720px) 100vw, (max-width: 980px) 50vw, 25vw";
   const detailSizes = "(max-width: 820px) 100vw, 50vw";
-  const priorityAttr = isPriority ? 'fetchpriority="high"' : "";
-  const lazyAttr = isPriority ? "" : 'loading="lazy"';
 
   if (p.video) {
     const posterSrc = p.video.replace(/\.(mp4|mov|webm|avi)$/i, ".jpg");
@@ -172,23 +169,22 @@ function buildMedia(p, wrapperClass = "card-img", isPriority = false) {
     return `<div class="${wrapperClass} has-video" style="position:relative;" onclick="event.preventDefault(); toggleCardVideo(this);">
       ${tag}
       <video src="${p.video}" width="1000" height="1000" muted loop playsinline preload="none" poster="${posterSrc}"></video>
-      <img class="card-video-poster" src="${posterSrc}" ${buildResponsiveImageAttrs(posterSrc, cardSizes)} width="1000" height="1000" data-fallback="${p.img}" alt="" aria-hidden="true" ${priorityAttr}>
+      <img class="card-video-poster" src="${posterSrc}" ${buildResponsiveImageAttrs(posterSrc, cardSizes)} width="1000" height="1000" data-fallback="${p.img}" alt="" aria-hidden="true">
       <span class="card-play-btn">&#9658;</span>
     </div>`;
   }
 
   return `<div class="${wrapperClass}">
       ${tag}
-      <img src="${p.img}" ${buildResponsiveImageAttrs(p.img, cardSizes)} width="1000" height="1000" alt="${p.collection} ${p.name}" ${lazyAttr} ${priorityAttr}>
+      <img src="${p.img}" ${buildResponsiveImageAttrs(p.img, cardSizes)} width="1000" height="1000" alt="${p.collection} ${p.name}" loading="lazy">
     </div>`;
 }
 
-
-function cardHTML(p, isPriority = false) {
+function cardHTML(p) {
   return `
     <article class="card">
       <a class="card-link" href="#detalle/${p.id}">
-        ${buildMedia(p, "card-img", isPriority)}
+        ${buildMedia(p)}
         <div class="card-collection">${p.collection}</div>
         <h3>${p.name}</h3>
         <div class="card-specs"><b>${p.specs}</b><br>${p.material}</div>
@@ -199,14 +195,12 @@ function cardHTML(p, isPriority = false) {
   `;
 }
 
-
 function renderGrid(id, section) {
   const el = document.getElementById(id);
   if (!el) return;
   const items = productsInSection(section);
-  el.innerHTML = items.map((p, index) => cardHTML(p, section === "destacados" && index === 0)).join("");
-  setupCardVideoPreviews(); 
-
+  el.innerHTML = items.map(cardHTML).join("");
+  setupCardVideoPreviews();
 
   // Si el filtro deja esta sección sin productos, ocultamos la sección
   // completa (encabezado incluido) en vez de mostrar un título con una

@@ -76,7 +76,7 @@ function buildButton(p, extraAttrs = "") {
   if (p.status === "agotado") {
     return `<div class="soon-note">Próximamente disponible</div><span class="btn disabled">${WHATSAPP_ICON} No disponible</span>`;
   }
-  return `<a class="btn" href="${whatsappLink(p)}" target="_blank" rel="noopener" ${extraAttrs}>${WHATSAPP_ICON} Comprar por WhatsApp</a>`;
+  return `<a class="btn" href="${whatsappLink(p)}" target="_blank" rel="noopener" ${extraAttrs}>${WHATSAPP_ICON} Ordenar por WhatsApp</a>`;
 }
 
 function buildMedia(p, wrapperClass = "card-img") {
@@ -85,9 +85,10 @@ function buildMedia(p, wrapperClass = "card-img") {
   // Solo se crea la etiqueta <video> (y por lo tanto solo se descarga
   // el archivo) si este producto cayó en la selección aleatoria de hoy.
   if (p.video && autoplayVideoIds.has(p.id)) {
-    return `<div class="${wrapperClass} has-video">
+    return `<div class="${wrapperClass} has-video" style="position:relative;" onclick="event.preventDefault(); const v=this.querySelector('video'); v.muted=false; v.play(); this.querySelector('.card-play-btn').style.display='none';">
         ${tag}
-        <video src="${p.video}" poster="${p.img}" autoplay muted loop playsinline></video>
+        <video src="${p.video}" poster="${p.img}" muted loop playsinline></video>
+        <span class="card-play-btn" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;pointer-events:none;">&#9658;</span>
       </div>`;
   }
 

@@ -277,12 +277,54 @@ nav.main-nav a:focus-visible::after {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-/* Cuando un producto con video no le tocó autoplay esta visita, mostramos
-   su foto dentro del mismo contenedor oscuro (.has-video). Sin esto, el
-   mix-blend-mode: multiply de arriba oscurecería la foto casi por completo
-   sobre el fondo negro. */
+.card-video-poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 1;
+  transition: opacity 0.24s ease;
+  z-index: 1;
+}
+
+.card-video-poster.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.card-play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.card-img.has-video.is-playing .card-play-btn {
+  display: none;
+}
+
+.card-img.has-video .card-video-poster {
+  background: var(--ink);
+}
+
+/* Cuando el producto tiene video, el poster se muestra en el contenedor
+   y el video entra en reproducción solo al tocarlo. */
 .card-img.has-video img {
   width: 100%;
   height: 100%;

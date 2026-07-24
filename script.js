@@ -49,20 +49,9 @@ function passesFilters(p) {
   return materialOk && priceOk;
 }
 
-// ── Selección aleatoria de videos que se reproducen al cargar ──
-// En vez de que los N productos con video (p.video) se reproduzcan TODOS
-// de golpe al abrir la página (pesado, sobre todo en celular), elegimos al
-// azar solo 2 en cada visita. Los que no caen en la selección muestran
-// nada más su foto — ni siquiera se crea la etiqueta <video> para ellos,
-// así que el navegador no descarga ni un byte de esos archivos.
-// Bonus: cada visita puede mostrar una combinación distinta, dándole
-// variedad al catálogo sin que tú tengas que hacer nada manual.
-const AUTOPLAY_VIDEO_COUNT = 5;
-const videoProducts = PRODUCTS.filter(p => p.video);
-const shuffledVideoProducts = [...videoProducts].sort(() => Math.random() - 0.5);
-const autoplayVideoIds = new Set(
-  shuffledVideoProducts.slice(0, AUTOPLAY_VIDEO_COUNT).map(p => p.id)
-);
+// Los productos con video se muestran en la cuadrícula como miniaturas de
+// video en pausa. No se reproducen automáticamente al cargar; el usuario
+// los activa al tocarlos y solo un video puede estar reproduciéndose a la vez.
 
 // ── Helpers compartidos (antes duplicados entre cardHTML y renderMarca) ──
 
@@ -81,56 +70,107 @@ function buildButton(p, extraAttrs = "") {
 
 // Controla el play/pause de los videos de la cuadrícula del catálogo (no
 // el de la vista de detalle, que es aparte). Reglas:
-// 1) SIEMPRE se queda mudo aquí — nunca le quitamos el "muted", a
-//    diferencia de antes que se le quitaba el sonido al darle play.
-// 2) Si le das play a un video y había OTRO sonando/reproduciéndose en
-//    la cuadrícula, ese otro se pausa solo (y su botón de play reaparece).
-// 3) Si le das click a un video que YA está reproduciéndose, se pausa
-//    (antes no había forma de pausarlo una vez iniciado).
+// 1) Siempre quedan mudos aquí.
+// 2) Si se activa un video y había otro reproduciéndose, ese otro se pausa.
+// 3) Si se vuelve a tocar el mismo video, se detiene.
+function pauseOtherCardVideos(activeWrapper) {
+  document.querySelectorAll(".has-video").forEach(otherWrapper => {
+    if (otherWrapper === activeWrapper) return;
+    const otherVideo = otherWrapper.querySelector("video");
+    if (otherVideo && !otherVideo.paused) {
+      otherVideo.pause();
+      otherWrapper.classList.remove("is-playing");
+      const otherBtn = otherWrapper.querySelector(".card-play-btn");
+      if (otherBtn) otherBtn.style.display = "flex";
+    }
+  });
+}
+
 function toggleCardVideo(wrapperEl) {
   const video = wrapperEl.querySelector("video");
   if (!video) return;
   const playBtn = wrapperEl.querySelector(".card-play-btn");
+  const poster = wrapperEl.querySelector(".card-video-poster");
 
   if (video.paused) {
-    // Pausa cualquier otro video que esté reproduciéndose en la página
-    document.querySelectorAll(".has-video").forEach(otherWrapper => {
-      if (otherWrapper === wrapperEl) return;
-      const otherVideo = otherWrapper.querySelector("video");
-      if (otherVideo && !otherVideo.paused) {
-        otherVideo.pause();
-        const otherBtn = otherWrapper.querySelector(".card-play-btn");
-        if (otherBtn) otherBtn.style.display = "flex";
-      }
-    });
-    video.muted = true; // siempre mudo en la cuadrícula del catálogo
-    video.play();
+    pauseOtherCardVideos(wrapperEl);
+    video.muted = true;
+    wrapperEl.classList.add("is-playing");
+    if (poster) poster.classList.add("is-hidden");
+    if (video.currentTime >= video.duration - 0.05 || video.currentTime === 0) {
+      video.currentTime = 0;
+    }
+    const playPromise = video.play();
     if (playBtn) playBtn.style.display = "none";
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(() => {
+        wrapperEl.classList.remove("is-playing");
+        if (poster) poster.classList.remove("is-hidden");
+        if (playBtn) playBtn.style.display = "flex";
+      });
+    }
   } else {
     video.pause();
+    wrapperEl.classList.remove("is-playing");
+    if (poster) poster.classList.remove("is-hidden");
     if (playBtn) playBtn.style.display = "flex";
   }
+}
+
+function setupCardVideoPreviews() {
+  document.querySelectorAll(".has-video").forEach((wrapperEl) => {
+    const video = wrapperEl.querySelector("video");
+    const poster = wrapperEl.querySelector(".card-video-poster");
+    if (!video || !poster) return;
+
+    const showPoster = () => poster.classList.remove("is-hidden");
+    const hidePoster = () => poster.classList.add("is-hidden");
+
+    video.addEventListener("play", hidePoster, { once: false });
+    video.addEventListener("pause", showPoster, { once: false });
+    video.addEventListener("ended", showPoster, { once: false });
+
+    const fallbackSrc = poster.getAttribute("data-fallback") || "";
+    const captureFrame = () => {
+      if (!video.videoWidth || !video.videoHeight) return;
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      poster.src = canvas.toDataURL("image/jpeg", 0.9);
+      poster.dataset.ready = "true";
+      poster.classList.remove("is-hidden");
+    };
+
+    if (video.readyState >= 2) {
+      captureFrame();
+    } else {
+      video.addEventListener("loadedmetadata", captureFrame, { once: true });
+      video.addEventListener("canplay", captureFrame, { once: true });
+    }
+
+    video.addEventListener("error", () => {
+      if (fallbackSrc) poster.src = fallbackSrc;
+      poster.dataset.ready = "true";
+      poster.classList.remove("is-hidden");
+    }, { once: true });
+  });
 }
 
 function buildMedia(p, wrapperClass = "card-img") {
   const tag = buildTag(p);
 
-  // Solo se crea la etiqueta <video> (y por lo tanto solo se descarga
-  // el archivo) si este producto cayó en la selección aleatoria de hoy.
-  if (p.video && autoplayVideoIds.has(p.id)) {
+  if (p.video) {
     return `<div class="${wrapperClass} has-video" style="position:relative;" onclick="event.preventDefault(); toggleCardVideo(this);">
-    ${tag}
-        <video src="${p.video}" poster="${p.img}" muted loop playsinline></video>
-        <span class="card-play-btn" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;pointer-events:none;">&#9658;</span>
-      </div>`;
+      ${tag}
+      <video src="${p.video}" muted loop playsinline preload="auto"></video>
+      <img class="card-video-poster" src="${p.img}" data-fallback="${p.img}" alt="" aria-hidden="true">
+      <span class="card-play-btn">&#9658;</span>
+    </div>`;
   }
 
-  // Si el producto tiene video pero no le tocó esta vez, lo mostramos
-  // EXACTAMENTE igual que un producto sin video: mismo contenedor
-  // cuadrado, mismo object-fit: contain (foto completa, sin recortar).
-  // Antes esto usaba el wrapper .has-video (fondo negro, proporción 3:4,
-  // recorte), y por eso Vintage Alhambra y Barbada se veían con más
-  // zoom que Figaro Torzal — eran dos estilos distintos sin querer.
   return `<div class="${wrapperClass}">
       ${tag}
       <img src="${p.img}" alt="${p.collection} ${p.name}" loading="lazy">
@@ -157,6 +197,7 @@ function renderGrid(id, section) {
   if (!el) return;
   const items = productsInSection(section);
   el.innerHTML = items.map(cardHTML).join("");
+  setupCardVideoPreviews();
 
   // Si el filtro deja esta sección sin productos, ocultamos la sección
   // completa (encabezado incluido) en vez de mostrar un título con una
@@ -194,6 +235,7 @@ function renderMarca() {
   if (sectionEl) {
     sectionEl.style.display = items.length ? "" : "none";
   }
+  setupCardVideoPreviews();
   return items.length;
 }
 

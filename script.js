@@ -9,7 +9,7 @@ function money(n) {
 }
 
 function whatsappLink(product) {
-  const msg = `Hola, me interesa el ${product.collection} ${product.name} (${money(product.price)}). ¿Está disponible?`;
+  const msg = `Hola, me interesa el ${product.collection} ${product.name} (${money(product.price)}).`;
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
 }
 

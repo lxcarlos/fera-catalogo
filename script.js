@@ -207,10 +207,12 @@ function buildMedia(p, wrapperClass = "card-img") {
   const detailSizes = "(max-width: 820px) 100vw, 50vw";
 
   if (p.video) {
+    const posterSrc = p.video.replace(/\.(mp4|mov|webm|avi)$/i, ".jpg");
+
     return `<div class="${wrapperClass} has-video" style="position:relative;" onclick="event.preventDefault(); toggleCardVideo(this);">
       ${tag}
-      <video src="${p.video}" width="1000" height="1000" muted loop playsinline preload="auto" poster=""></video>
-      <img class="card-video-poster" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" ${buildResponsiveImageAttrs(p.img, cardSizes)} width="1000" height="1000" data-fallback="${p.img}" alt="" aria-hidden="true">
+      <video src="${p.video}" width="1000" height="1000" muted loop playsinline preload="auto" poster="${posterSrc}"></video>
+      <img class="card-video-poster" src="${posterSrc}" ${buildResponsiveImageAttrs(posterSrc, cardSizes)} width="1000" height="1000" data-fallback="${p.img}" alt="" aria-hidden="true">
       <span class="card-play-btn">&#9658;</span>
     </div>`;
   }

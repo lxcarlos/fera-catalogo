@@ -335,10 +335,15 @@ nav.main-nav a {
   .grid { grid-template-columns: repeat(2, 1fr); }
 }
 
+
 @media (max-width: 720px) {
   .header-cta span { display: none; }
   .header-cta { padding: 10px; }
+  nav.main-nav { display: none; }
+  .nav-toggle { display: block; }
   .grid { grid-template-columns: 1fr 1fr; }
+
+
   .hero { padding: 18px 12px 12px; }
   .wrap { padding: 0 10px; }
   .section { padding: 26px 0 8px; }

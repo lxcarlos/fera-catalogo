@@ -131,49 +131,6 @@ function setupCardVideoPreviews() {
     video.addEventListener("ended", showPoster, { once: false });
 
     const fallbackSrc = poster.getAttribute("data-fallback") || "";
-    const captureFrame = () => {
-      if (!video.videoWidth || !video.videoHeight) return;
-      const canvas = document.createElement("canvas");
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const frameDataUrl = canvas.toDataURL("image/jpeg", 0.9);
-      poster.src = frameDataUrl;
-      video.setAttribute("poster", frameDataUrl);
-      poster.dataset.ready = "true";
-      poster.classList.remove("is-hidden");
-    };
-
-    const captureFrameAtSecondOne = () => {
-      if (!video.duration || video.duration < 1) {
-        captureFrame();
-        return;
-      }
-
-      const seekToFrame = () => {
-        if (Math.abs(video.currentTime - 1) > 0.05) {
-          video.currentTime = 1;
-          return;
-        }
-        captureFrame();
-      };
-
-      video.addEventListener("seeked", () => {
-        captureFrame();
-      }, { once: true });
-
-      seekToFrame();
-    };
-
-    if (video.readyState >= 2) {
-      captureFrameAtSecondOne();
-    } else {
-      video.addEventListener("loadedmetadata", captureFrameAtSecondOne, { once: true });
-      video.addEventListener("canplay", captureFrameAtSecondOne, { once: true });
-    }
-
     video.addEventListener("error", () => {
       if (fallbackSrc) poster.src = fallbackSrc;
       poster.dataset.ready = "true";

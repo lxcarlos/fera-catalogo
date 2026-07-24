@@ -159,21 +159,28 @@ function setupCardVideoPreviews() {
   });
 }
 
+function buildResponsiveImageAttrs(imgSrc, sizesAttr) {
+  if (!imgSrc) return "";
+  return `srcset="${imgSrc}" sizes="${sizesAttr}"`;
+}
+
 function buildMedia(p, wrapperClass = "card-img") {
   const tag = buildTag(p);
+  const cardSizes = "(max-width: 720px) 100vw, (max-width: 980px) 50vw, 25vw";
+  const detailSizes = "(max-width: 820px) 100vw, 50vw";
 
   if (p.video) {
     return `<div class="${wrapperClass} has-video" style="position:relative;" onclick="event.preventDefault(); toggleCardVideo(this);">
       ${tag}
       <video src="${p.video}" width="1000" height="1000" muted loop playsinline preload="auto"></video>
-      <img class="card-video-poster" src="${p.img}" width="1000" height="1000" data-fallback="${p.img}" alt="" aria-hidden="true">
+      <img class="card-video-poster" src="${p.img}" ${buildResponsiveImageAttrs(p.img, cardSizes)} width="1000" height="1000" data-fallback="${p.img}" alt="" aria-hidden="true">
       <span class="card-play-btn">&#9658;</span>
     </div>`;
   }
 
   return `<div class="${wrapperClass}">
       ${tag}
-      <img src="${p.img}" width="1000" height="1000" alt="${p.collection} ${p.name}" loading="lazy">
+      <img src="${p.img}" ${buildResponsiveImageAttrs(p.img, cardSizes)} width="1000" height="1000" alt="${p.collection} ${p.name}" loading="lazy">
     </div>`;
 }
 
@@ -475,7 +482,7 @@ function renderDetail(product) {
   const thumbsHTML = mediaItems.length > 1
     ? `<div class="detail-thumbs">${mediaItems.map((item, i) => `
         <div class="detail-thumb ${i === 0 ? "active" : ""}" data-index="${i}">
-          <img src="${item.type === "video" ? product.img : item.src}" width="200" height="200" alt="${product.name} ${i + 1}">
+          <img src="${item.type === "video" ? product.img : item.src}" ${buildResponsiveImageAttrs(item.type === "video" ? product.img : item.src, "(max-width: 820px) 100vw, 76px")} width="200" height="200" alt="${product.name} ${i + 1}">
           ${item.type === "video" ? `<span class="thumb-play">&#9654;</span>` : ""}
         </div>`).join("")}</div>`
     : "";
@@ -494,7 +501,7 @@ function renderDetail(product) {
   document.getElementById("detailGallery").innerHTML = `
     <div class="detail-main-img" id="detailMainImg">
       ${tag}
-      <img id="detailImgEl" src="${mediaItems[0].src}" width="1000" height="1000" alt="${product.collection} ${product.name}">
+      <img id="detailImgEl" src="${mediaItems[0].src}" ${buildResponsiveImageAttrs(mediaItems[0].src, "(max-width: 820px) 100vw, 50vw")} width="1000" height="1000" alt="${product.collection} ${product.name}">
       <video id="detailVideoEl" width="1000" height="1000" style="display:none;" playsinline controls loop></video>
       ${arrowsHTML}
     </div>

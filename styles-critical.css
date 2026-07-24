@@ -1,0 +1,327 @@
+/* ============================================
+   FERA — CSS crítico para primer render
+   ============================================ */
+:root {
+  --cream: #FFFFFF;
+  --cream-deep: #F7F7F5;
+  --ink: #1C1A16;
+  --ink-soft: #55524A;
+  --gold: #A8873F;
+  --gold-light: #C9A961;
+  --line: #E7E5E0;
+  --white: #FFFFFF;
+  --gray-off: #B9B5AA;
+  --max-w: 1180px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Jost', sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+h1, h2, h3, .price, .logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+a { color: inherit; text-decoration: none; }
+
+img { display: block; max-width: 100%; }
+
+.wrap {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+.eyebrow {
+  font-family: 'Jost', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 28px;
+  max-width: var(--max-w);
+  margin: 0 auto;
+}
+
+.logo {
+  font-size: 40px;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+.logo img {
+  height: 40px;
+  width: auto;
+  display: block;
+}
+
+nav.main-nav {
+  display: flex;
+  gap: 34px;
+}
+
+nav.main-nav a {
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.header-cta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid var(--ink);
+  padding: 10px 18px;
+  border-radius: 999px;
+  transition: background 0.25s ease, color 0.25s ease;
+  white-space: nowrap;
+}
+
+.header-search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--ink);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.hero {
+  padding: 36px 28px 26px;
+  text-align: center;
+  position: relative;
+}
+
+.hero .eyebrow { display: block; margin-bottom: 10px; }
+
+.hero h1 {
+  font-size: clamp(32px, 5vw, 52px);
+  margin: 0;
+  line-height: 1;
+}
+
+.hero p.sub {
+  max-width: 480px;
+  margin: 12px auto 0;
+  color: var(--ink-soft);
+  font-size: 15px;
+}
+
+.section {
+  padding: 64px 0 20px;
+}
+
+#destacados { padding-top: 24px; }
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 18px;
+}
+
+.section-head h2 {
+  font-size: 34px;
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.card {
+  background: var(--white);
+  padding: 28px 24px 32px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.card-img {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 22px;
+  background: var(--cream-deep);
+}
+
+.card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
+.card-img.has-video {
+  aspect-ratio: 3 / 4;
+  background: var(--ink);
+}
+
+.card-img.has-video video,
+.card-video-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  aspect-ratio: 1 / 1;
+}
+
+.card-video-poster {
+  position: absolute;
+  inset: 0;
+  opacity: 1;
+  transition: opacity 0.24s ease;
+  z-index: 1;
+}
+
+.card-video-poster.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.card-play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.tag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 5px 11px;
+  border-radius: 999px;
+  z-index: 2;
+}
+
+.tag.nuevo { background: var(--ink); color: var(--cream); }
+.tag.agotado { background: var(--gray-off); color: var(--white); }
+
+.card-collection {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 4px;
+}
+
+.card h3 {
+  font-size: 24px;
+  margin: 0 0 8px;
+}
+
+.card-specs {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-bottom: 14px;
+}
+
+.card-specs b { color: var(--ink); font-weight: 600; }
+
+.price {
+  font-size: 26px;
+  margin: 0 0 18px;
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: 'Jost', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 13px 16px;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.btn svg { width: 15px; height: 15px; }
+
+@media (max-width: 980px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 720px) {
+  .header-cta span { display: none; }
+  .header-cta { padding: 10px; }
+  .grid { grid-template-columns: 1fr 1fr; }
+  .hero { padding: 18px 12px 12px; }
+  .wrap { padding: 0 10px; }
+  .section { padding: 26px 0 8px; }
+  #destacados { padding-top: 16px; }
+  .section-head { margin-bottom: 14px; padding-bottom: 10px; }
+  .section-head h2 { font-size: 21px; }
+  .card { padding: 8px 6px 12px; }
+  .card-img { margin-bottom: 8px; }
+  .card h3 { font-size: 15px; margin: 0 0 3px; }
+  .card-collection { font-size: 9px; margin-bottom: 2px; }
+  .card-specs { font-size: 10px; margin-bottom: 8px; }
+  .price { font-size: 17px; margin: 0 0 8px; padding-top: 4px; }
+  .btn { font-size: 9px; padding: 8px 6px; letter-spacing: 0.04em; gap: 4px; }
+  .tag { font-size: 9px; padding: 3px 7px; top: 6px; left: 6px; }
+}

@@ -31,12 +31,14 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="styles-critical.css">
+<link rel="preload" href="styles.css" as="style" onload="this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="styles.css"></noscript>
 
 <!-- Google Analytics (GA4) ─────────────────────────────────────────
      ID real de tu propiedad "Fera" en Google Analytics. -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BW20DSWZFV"></script>
-<script>
+<script async defer src="https://www.googletagmanager.com/gtag/js?id=G-BW20DSWZFV"></script>
+<script defer>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
@@ -49,7 +51,7 @@
   <div class="header-inner">
 
     <a href="#top" class="logo">
-  <img src="assets/favicon.jpg" alt="Nombre de tu marca">
+  <img src="assets/favicon.jpg" width="160" height="160" alt="Nombre de tu marca">
 </a>
 
     <nav class="main-nav">
@@ -62,7 +64,7 @@
     <button type="button" id="filterToggleBtn" class="header-search-btn" aria-expanded="false" aria-controls="filterPanel" aria-label="Buscar y filtrar">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </button>
-    <a class="header-cta" id="whatsapp-header" target="_blank" rel="noopener">
+    <a class="header-cta" id="whatsapp-header" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8.9-.2.2-.3.2-.5.1-1.4-.7-2.4-1.3-3.3-2.9-.3-.4.2-.4.7-1.3.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.2 0 1.3.9 2.6 1.1 2.8.1.2 1.9 2.9 4.6 4 .6.3 1.1.4 1.5.5.6.2 1.2.2 1.6.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2-.1-.1-.2-.2-.5-.3z"/></svg>
       <span>WhatsApp</span>
     </a>
@@ -230,7 +232,7 @@
   <p class="foot-fine">© 2026 Fera Joyería</p>
 </footer>
 
-<script src="products.js"></script>
-<script src="script.js"></script>
+<script defer src="products.js"></script>
+<script defer src="script.js"></script>
 </body>
 </html>

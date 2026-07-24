@@ -139,16 +139,39 @@ function setupCardVideoPreviews() {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      poster.src = canvas.toDataURL("image/jpeg", 0.9);
+      const frameDataUrl = canvas.toDataURL("image/jpeg", 0.9);
+      poster.src = frameDataUrl;
+      video.setAttribute("poster", frameDataUrl);
       poster.dataset.ready = "true";
       poster.classList.remove("is-hidden");
     };
 
+    const captureFrameAtSecondOne = () => {
+      if (!video.duration || video.duration < 1) {
+        captureFrame();
+        return;
+      }
+
+      const seekToFrame = () => {
+        if (Math.abs(video.currentTime - 1) > 0.05) {
+          video.currentTime = 1;
+          return;
+        }
+        captureFrame();
+      };
+
+      video.addEventListener("seeked", () => {
+        captureFrame();
+      }, { once: true });
+
+      seekToFrame();
+    };
+
     if (video.readyState >= 2) {
-      captureFrame();
+      captureFrameAtSecondOne();
     } else {
-      video.addEventListener("loadedmetadata", captureFrame, { once: true });
-      video.addEventListener("canplay", captureFrame, { once: true });
+      video.addEventListener("loadedmetadata", captureFrameAtSecondOne, { once: true });
+      video.addEventListener("canplay", captureFrameAtSecondOne, { once: true });
     }
 
     video.addEventListener("error", () => {
@@ -186,8 +209,8 @@ function buildMedia(p, wrapperClass = "card-img") {
   if (p.video) {
     return `<div class="${wrapperClass} has-video" style="position:relative;" onclick="event.preventDefault(); toggleCardVideo(this);">
       ${tag}
-      <video src="${p.video}" width="1000" height="1000" muted loop playsinline preload="auto"></video>
-      <img class="card-video-poster" src="${p.img}" ${buildResponsiveImageAttrs(p.img, cardSizes)} width="1000" height="1000" data-fallback="${p.img}" alt="" aria-hidden="true">
+      <video src="${p.video}" width="1000" height="1000" muted loop playsinline preload="auto" poster=""></video>
+      <img class="card-video-poster" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" ${buildResponsiveImageAttrs(p.img, cardSizes)} width="1000" height="1000" data-fallback="${p.img}" alt="" aria-hidden="true">
       <span class="card-play-btn">&#9658;</span>
     </div>`;
   }

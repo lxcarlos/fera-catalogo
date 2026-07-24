@@ -168,7 +168,7 @@ function buildMedia(p, wrapperClass = "card-img") {
 
     return `<div class="${wrapperClass} has-video" style="position:relative;" onclick="event.preventDefault(); toggleCardVideo(this);">
       ${tag}
-      <video src="${p.video}" width="1000" height="1000" muted loop playsinline preload="auto" poster="${posterSrc}"></video>
+      <video src="${p.video}" width="1000" height="1000" muted loop playsinline preload="none" poster="${posterSrc}"></video>
       <img class="card-video-poster" src="${posterSrc}" ${buildResponsiveImageAttrs(posterSrc, cardSizes)} width="1000" height="1000" data-fallback="${p.img}" alt="" aria-hidden="true">
       <span class="card-play-btn">&#9658;</span>
     </div>`;

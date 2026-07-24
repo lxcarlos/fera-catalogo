@@ -278,6 +278,7 @@ nav.main-nav a:focus-visible::after {
   height: 100%;
   object-fit: cover;
   display: block;
+  aspect-ratio: 1 / 1;
 }
 
 .card-video-poster {
@@ -290,6 +291,7 @@ nav.main-nav a:focus-visible::after {
   opacity: 1;
   transition: opacity 0.24s ease;
   z-index: 1;
+  aspect-ratio: 1 / 1;
 }
 
 .card-video-poster.is-hidden {
@@ -489,6 +491,7 @@ footer .eyebrow { color: var(--gold-light); }
 }
 
 @media (max-width: 720px) {
+  .top-banner-slot { height: 200px; padding: 0 10px; margin-top: 14px; }
   nav.main-nav { display: none; }
   .nav-toggle { display: block; }
   .header-cta span { display: none; }
@@ -581,6 +584,7 @@ footer .eyebrow { color: var(--gold-light); }
 .detail-main-img video {
   width: 100%; height: 100%;
   object-fit: contain;
+  aspect-ratio: 1 / 1;
 }
 .detail-main-img img { mix-blend-mode: multiply; }
 .detail-main-img.video-active { background: #000; }

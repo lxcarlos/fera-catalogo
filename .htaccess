@@ -1,0 +1,37 @@
+# Cache largo para recursos estáticos que no cambian seguido
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 day"
+
+  ExpiresByType image/jpg "access plus 30 days"
+  ExpiresByType image/jpeg "access plus 30 days"
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType image/gif "access plus 30 days"
+  ExpiresByType image/svg+xml "access plus 30 days"
+  ExpiresByType image/webp "access plus 30 days"
+  ExpiresByType image/avif "access plus 30 days"
+  ExpiresByType image/x-icon "access plus 30 days"
+
+  ExpiresByType text/css "access plus 30 days"
+  ExpiresByType application/javascript "access plus 30 days"
+  ExpiresByType application/x-javascript "access plus 30 days"
+  ExpiresByType text/javascript "access plus 30 days"
+
+  ExpiresByType font/ttf "access plus 365 days"
+  ExpiresByType font/otf "access plus 365 days"
+  ExpiresByType font/woff "access plus 365 days"
+  ExpiresByType font/woff2 "access plus 365 days"
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(css|js|png|jpg|jpeg|gif|svg|webp|avif|ico|woff|woff2|ttf|otf)$">
+    Header set Cache-Control "public, max-age=2592000, immutable"
+  </FilesMatch>
+</IfModule>
+
+# Evita cache agresivo en HTML para que los cambios del sitio se reflejen más rápido
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|htm)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+  </FilesMatch>
+</IfModule>

@@ -79,14 +79,47 @@ function buildButton(p, extraAttrs = "") {
   return `<a class="btn" href="${whatsappLink(p)}" target="_blank" rel="noopener" ${extraAttrs}>${WHATSAPP_ICON} Ordenar por WhatsApp</a>`;
 }
 
+// Controla el play/pause de los videos de la cuadrícula del catálogo (no
+// el de la vista de detalle, que es aparte). Reglas:
+// 1) SIEMPRE se queda mudo aquí — nunca le quitamos el "muted", a
+//    diferencia de antes que se le quitaba el sonido al darle play.
+// 2) Si le das play a un video y había OTRO sonando/reproduciéndose en
+//    la cuadrícula, ese otro se pausa solo (y su botón de play reaparece).
+// 3) Si le das click a un video que YA está reproduciéndose, se pausa
+//    (antes no había forma de pausarlo una vez iniciado).
+function toggleCardVideo(wrapperEl) {
+  const video = wrapperEl.querySelector("video");
+  if (!video) return;
+  const playBtn = wrapperEl.querySelector(".card-play-btn");
+
+  if (video.paused) {
+    // Pausa cualquier otro video que esté reproduciéndose en la página
+    document.querySelectorAll(".has-video").forEach(otherWrapper => {
+      if (otherWrapper === wrapperEl) return;
+      const otherVideo = otherWrapper.querySelector("video");
+      if (otherVideo && !otherVideo.paused) {
+        otherVideo.pause();
+        const otherBtn = otherWrapper.querySelector(".card-play-btn");
+        if (otherBtn) otherBtn.style.display = "flex";
+      }
+    });
+    video.muted = true; // siempre mudo en la cuadrícula del catálogo
+    video.play();
+    if (playBtn) playBtn.style.display = "none";
+  } else {
+    video.pause();
+    if (playBtn) playBtn.style.display = "flex";
+  }
+}
+
 function buildMedia(p, wrapperClass = "card-img") {
   const tag = buildTag(p);
 
   // Solo se crea la etiqueta <video> (y por lo tanto solo se descarga
   // el archivo) si este producto cayó en la selección aleatoria de hoy.
   if (p.video && autoplayVideoIds.has(p.id)) {
-    return `<div class="${wrapperClass} has-video" style="position:relative;" onclick="event.preventDefault(); const v=this.querySelector('video'); v.muted=false; v.play(); this.querySelector('.card-play-btn').style.display='none';">
-        ${tag}
+    return `<div class="${wrapperClass} has-video" style="position:relative;" onclick="event.preventDefault(); toggleCardVideo(this);">
+    ${tag}
         <video src="${p.video}" poster="${p.img}" muted loop playsinline></video>
         <span class="card-play-btn" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;pointer-events:none;">&#9658;</span>
       </div>`;

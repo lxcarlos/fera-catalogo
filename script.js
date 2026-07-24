@@ -164,6 +164,20 @@ function buildResponsiveImageAttrs(imgSrc, sizesAttr) {
   return `srcset="${imgSrc}" sizes="${sizesAttr}"`;
 }
 
+function setResponsiveImageSource(imgEl, src, sizesAttr) {
+  if (!imgEl) return;
+  if (!src) {
+    imgEl.removeAttribute("srcset");
+    imgEl.removeAttribute("sizes");
+    imgEl.removeAttribute("src");
+    return;
+  }
+
+  imgEl.src = src;
+  imgEl.setAttribute("srcset", src);
+  imgEl.setAttribute("sizes", sizesAttr);
+}
+
 function buildMedia(p, wrapperClass = "card-img") {
   const tag = buildTag(p);
   const cardSizes = "(max-width: 720px) 100vw, (max-width: 980px) 50vw, 25vw";
@@ -449,7 +463,7 @@ function goToSlide(i) {
     mainBox.classList.remove("video-active");
     videoEl.style.display = "none";
     imgEl.style.display = "block";
-    imgEl.src = item.src;
+    setResponsiveImageSource(imgEl, item.src, "(max-width: 820px) 100vw, 50vw");
     restartAnimation(imgEl);
   }
 

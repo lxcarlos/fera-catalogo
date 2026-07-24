@@ -205,7 +205,7 @@ function renderGrid(id, section) {
   if (!el) return;
   const items = productsInSection(section);
   el.innerHTML = items.map((p, index) => cardHTML(p, section === "destacados" && index === 0)).join("");
-  setupCardVideoPreviews();
+  setupCardVideoPreviews(); 
 
 
   // Si el filtro deja esta sección sin productos, ocultamos la sección

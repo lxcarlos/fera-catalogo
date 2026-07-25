@@ -92,7 +92,8 @@ img { display: block; max-width: 100%; }
 
 .logo img {
   height: 40px;
-  width: auto;
+  width: 40px;
+  aspect-ratio: 1 / 1;
   display: block;
 }
 

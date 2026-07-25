@@ -94,7 +94,8 @@ img { display: block; max-width: 100%; }
 
 .logo img {
   height: 40px;
-  width: auto;
+  width: 40px;
+  aspect-ratio: 1 / 1;
   display: block;
 }
 
@@ -159,6 +160,7 @@ nav.main-nav a {
   margin: 12px auto 0;
   color: var(--ink-soft);
   font-size: 15px;
+  min-height: 45px;
 }
 
 .section {

@@ -251,6 +251,8 @@ nav.main-nav a {
   transform: translate(-50%, -50%);
   width: clamp(40px, 10vw, 48px);
   height: clamp(40px, 10vw, 48px);
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.55);
   color: #fff;
@@ -368,4 +370,11 @@ nav.main-nav a {
   max-height: 0;
   opacity: 0;
   overflow: hidden;
+}
+
+
+
+
+a, button {
+  -webkit-tap-highlight-color: transparent;
 }

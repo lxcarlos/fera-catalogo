@@ -310,6 +310,8 @@ nav.main-nav a:focus-visible::after {
   transform: translate(-50%, -50%);
   width: clamp(40px, 10vw, 48px);
   height: clamp(40px, 10vw, 48px);
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.55);
   color: #fff;
@@ -895,4 +897,11 @@ footer .eyebrow { color: var(--gold-light); }
 
 @media (max-width: 720px) {
   .chip-group .chip { font-size: 10px; padding: 7px 13px; }
+}
+
+
+
+
+a, button {
+  -webkit-tap-highlight-color: transparent;
 }

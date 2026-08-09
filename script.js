@@ -40,6 +40,7 @@ const PRICE_RANGES = [
   { key: "mas-1500",  label: "Más de $1,500",  min: 1500, max: Infinity }
 ];
 
+
 function passesFilters(p) {
   const materialOk = currentFilters.materials.size === 0 || currentFilters.materials.has(p.material);
   const priceOk = currentFilters.priceRanges.size === 0 || [...currentFilters.priceRanges].some(key => {
@@ -263,7 +264,6 @@ function renderCatalog() {
   }
 }
 
-renderCatalog();
 
 // ── Chips de filtro (material y precio) ──
 // Ambos grupos funcionan igual, así que usamos una sola función genérica:
@@ -311,12 +311,17 @@ function chipsHTML(options) {
 // Los chips de material se generan solos a partir de los materiales que
 // ya existen en tus productos (Set quita duplicados). Así, si agregas un
 // material nuevo a products.js en el futuro, el filtro se actualiza solo.
-const materialFilterEl = document.getElementById("filterMaterial");
-if (materialFilterEl) {
-  const materials = [...new Set(PRODUCTS.map(p => p.material))].sort();
-  materialFilterEl.innerHTML = chipsHTML(materials.map(m => ({ value: m, label: m })));
-  setupChipGroup(materialFilterEl, currentFilters.materials, renderCatalog);
-}
+
+document.addEventListener("productsReady", () => {
+  renderCatalog();
+
+  const materialFilterEl = document.getElementById("filterMaterial");
+  if (materialFilterEl) {
+    const materials = [...new Set(PRODUCTS.map(p => p.material))].sort();
+    materialFilterEl.innerHTML = chipsHTML(materials.map(m => ({ value: m, label: m })));
+    setupChipGroup(materialFilterEl, currentFilters.materials, renderCatalog);
+  }
+});
 
 const priceFilterEl = document.getElementById("filterPriceChips");
 if (priceFilterEl) {

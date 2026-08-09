@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Fera — Panel de administración</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="loginView" class="login-wrap">
+  <form id="loginForm" class="login-box">
+    <h1>Fera — Panel</h1>
+    <input type="email" id="loginEmail" placeholder="Correo" required>
+    <input type="password" id="loginPassword" placeholder="Contraseña" required>
+    <button type="submit">Entrar</button>
+    <p id="loginError" class="error-msg"></p>
+  </form>
+</div>
+
+<!-- ===== SIN ACCESO ===== -->
+<div id="noAccessView" class="login-wrap" style="display:none;">
+  <div class="login-box">
+    <h1>Sin acceso</h1>
+    <p>Tu cuenta no tiene permiso para entrar a este panel.</p>
+    <button id="logoutBtnNoAccess">Cerrar sesión</button>
+  </div>
+</div>
+
+<!-- ===== PANEL ===== -->
+<div id="adminView" style="display:none;">
+  <header class="admin-header">
+    <h1>Fera — Panel</h1>
+    <div class="admin-header-right">
+      <span id="roleLabel" class="role-badge"></span>
+      <button id="logoutBtn">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <div class="admin-toolbar">
+      <h2>Productos</h2>
+      <button id="newProductBtn" class="btn-primary" style="display:none;">+ Nuevo producto</button>
+    </div>
+
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Foto</th>
+          <th>Nombre</th>
+          <th>Precio menudeo</th>
+          <th>Precio mayoreo</th>
+          <th>Inventario</th>
+          <th>Estatus</th>
+          <th id="actionsHeader" style="display:none;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="productsTableBody"></tbody>
+    </table>
+  </main>
+</div>
+
+<!-- ===== FORMULARIO PRODUCTO (modal) ===== -->
+<div id="productModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="modalTitle">Nuevo producto</h2>
+      <button id="closeModalBtn" class="modal-close">&times;</button>
+    </div>
+
+    <form id="productForm">
+      <input type="hidden" id="editingId">
+
+      <label>ID único (sin espacios, ej. pulso-torzal-nuevo)</label>
+      <input type="text" id="f_id" required>
+
+      <label>Nombre del producto</label>
+      <input type="text" id="f_name" required>
+
+      <label>Colección</label>
+      <input type="text" id="f_collection">
+
+      <label>Especificaciones (ej. 20cm / 4mm)</label>
+      <input type="text" id="f_specs">
+
+      <label>Material</label>
+      <input type="text" id="f_material">
+
+      <label>Descripción</label>
+      <textarea id="f_description" rows="3"></textarea>
+
+      <div class="form-row">
+        <div>
+          <label>Precio menudeo</label>
+          <input type="number" step="0.01" id="f_price" required>
+        </div>
+        <div>
+          <label>Precio mayoreo</label>
+          <input type="number" step="0.01" id="f_price_wholesale">
+        </div>
+      </div>
+
+      <label>Estatus</label>
+      <select id="f_status">
+        <option value="disponible">Disponible</option>
+        <option value="nuevo">Nuevo</option>
+        <option value="agotado">Agotado</option>
+      </select>
+
+      <label>Secciones donde aparece</label>
+      <div class="checkbox-row">
+        <label><input type="checkbox" value="destacados" class="f_section"> Destacados</label>
+        <label><input type="checkbox" value="pulsos" class="f_section"> Pulsos</label>
+        <label><input type="checkbox" value="cadenas" class="f_section"> Cadenas</label>
+        <label><input type="checkbox" value="marca" class="f_section"> Marca</label>
+      </div>
+
+      <hr>
+
+      <label>Imagen principal — sube un archivo (recomendado)</label>
+      <input type="file" id="f_imageFile" accept="image/*">
+      <p class="hint">o, si prefieres, pega la ruta a mano:</p>
+      <input type="text" id="f_imgManual" placeholder="assets/PULSOS/producto/foto-1.jpg">
+      <p id="currentImgPreview" class="hint"></p>
+
+      <label>Fotos adicionales (rutas separadas por coma, opcional)</label>
+      <input type="text" id="f_images" placeholder="assets/.../1.jpg, assets/.../2.jpg">
+
+      <label>Video (ruta manual, opcional)</label>
+      <input type="text" id="f_video" placeholder="assets/.../video.mp4">
+
+      <hr>
+
+      <label>Cantidad en inventario</label>
+      <input type="number" id="f_quantity" value="0">
+
+      <div class="form-actions">
+        <button type="button" id="deleteProductBtn" class="btn-danger" style="display:none;">Eliminar producto</button>
+        <button type="submit" class="btn-primary">Guardar</button>
+      </div>
+      <p id="formError" class="error-msg"></p>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
